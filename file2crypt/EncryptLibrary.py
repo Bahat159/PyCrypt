@@ -48,66 +48,69 @@ from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
 init(autoreset=True)
 
 myFile = "./fsm.txt"
+class EncryptWithFernet():
+    def __init__(file_name):
+        myFile = file_name
 
-def generate_new_token():
-    passcode = Fernet.generate_key()
-    return passcode
+    def generate_new_token():
+        passcode = Fernet.generate_key()
+        return passcode
 
-def print_red(message):
-    print(f"{Fore.RED}{message}")
+    def print_red(message):
+        print(f"{Fore.RED}{message}")
 
-def print_success(message):
-    print(f"{Back.GREEN}{message}")
+    def print_success(message):
+        print(f"{Back.GREEN}{message}")
 
-def make_new_encryption_key(passcode):
-    salt = os.urandom(16)
-    kdf = PBKDF2HMAC(
-    algorithm=hashes.SHA256(),
-    length=32,
-    salt=salt,
-    iterations=320000,
-    backend=default_backend()
-    )
-    key = base64.urlsafe_b64encode(kdf.derive(passcode))
-    return Fernet(key)
+    def make_new_encryption_key(passcode):
+        salt = os.urandom(16)
+        kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=320000,
+        backend=default_backend()
+        )
+        key = base64.urlsafe_b64encode(kdf.derive(passcode))
+        return Fernet(key)
 
 
-def encrypt_data(key_frame,message):
-    encrypted_token = key_frame.encrypt(bytes(message,  encoding='utf-8'))
-    return encrypted_token
+    def encrypt_data(key_frame,message):
+        encrypted_token = key_frame.encrypt(bytes(message,  encoding='utf-8'))
+        return encrypted_token
 
-def decrypt_data(key_frame,message):
-    decrypted_token = key_frame.decrypt(message)
-    return decrypted_token
+    def decrypt_data(key_frame,message):
+        decrypted_token = key_frame.decrypt(message)
+        return decrypted_token
 
-def file_content_to_encrypt(myFile):
-     with open(myFile,'r') as new_content:
-        file_content = new_content.read().replace('\r', '')
-        return file_content
+    def file_content_to_encrypt(myFile):
+        with open(myFile,'r') as new_content:
+            file_content = new_content.read().replace('\r', '')
+            return file_content
 
-def show_decrypted_file_content(newKey,myFile):
-    if newKey:
-        dec_data = decrypt_data(newKey, myFile)
-        return dec_data
+    def show_decrypted_file_content(newKey,myFile):
+        if newKey:
+            dec_data = decrypt_data(newKey, myFile)
+            return dec_data
 
-def show_encrypted_file_content(newKey,myFile):
-    if newKey:
-        enc_data = encrypt_data(newKey, myFile)
+    def show_encrypted_file_content(newKey,myFile):
+        if newKey:
+            enc_data = encrypt_data(newKey, myFile)
+            return enc_data
+
+
+    def encrypt_file_content(newKey, myFile):
+        file_content = file_content_to_encrypt(myFile)
+        enc_data = encrypt_data(newKey, file_content)
         return enc_data
 
-
-def encrypt_file_content(newKey, myFile):
-    file_content = file_content_to_encrypt(myFile)
-    enc_data = encrypt_data(newKey, file_content)
-    return enc_data
-
-def decrypt_file_content(newKey, myFile):
-    decrypt_me = file_content_to_encrypt(myFile)
-    dec_data = decrypt_data(newKey, decrypt_me)
-    return dec_data
+    def decrypt_file_content(newKey, myFile):
+        decrypt_me = file_content_to_encrypt(myFile)
+        dec_data = decrypt_data(newKey, decrypt_me)
+        return dec_data
 
 
-class HazardousMaterialLayer():
+class HazardousMaterialLayer_AEAD():
     # Authenticated encryption (AEAD)
     # Authenticated encryption with associated data (AEAD) are encryption schemes 
     # which provide both confidentiality and integrity for their ciphertext. 
@@ -115,11 +118,10 @@ class HazardousMaterialLayer():
     
 
     def __init__(self, print_class):
-        self.new_key = ""
-        self.decode  = ""
-        self.cha_cha_key = ""
-        self.hazardous_material_layer_data = []
-
+        self.print_class_callback = print_class
+        #self.decode  = ""
+        #self.cha_cha_key = ""
+        self.hazardous_material_layer_data = ["Library alert mode "]
 
     def encrypt_decrypt_with_ChaCha_algorithm(self):
         data_to_encrypt = ""
@@ -161,15 +163,15 @@ class HazardousMaterialLayer():
     # OCB is a blockcipher-based mode of operation that simultaneously provides both privacy and authenticity for a user-supplied plaintext
     #
 
-    def _generate_new_chacha20Poly1305_key_(self, print_class):
+    def _generate_new_chacha20Poly1305_key_(self, print_class_callback):
         try:
             algor = 'cryptography.exceptions.UnsupportedAlgorithm'
             from base64 import b64encode
             new_key = ChaCha20Poly1305.generate_key()
             decode = b64encode(new_key).decode()
 
-            #print_class.print_with_format(new_key, decode)
-            #print_class.print_format_with_index_number(new_key, decode)
+            #print_class_callback.print_with_format(new_key, decode)
+            #print_class_callback.print_format_with_index_number(new_key, decode)
 
             #print(f'\nchacha20Poly1305 KEY = [{new_key}]', end="\r")
             #print(f'b64decode  = [{decode}]', end=" ")
@@ -205,3 +207,17 @@ class PrintWithFormat():
 
     def print_text(message):
         print(f'{message}')
+    
+    def initiate_module():
+        try:
+            print_class = PrintWithFormat()
+            class_method = HazardousMaterialLayer_AEAD(print_class)
+            returned_key = class_method._generate_new_chacha20Poly1305_key_(print_class)
+            key = returned_key['new_key']
+            decoder = returned_key['decode']
+
+            print('\nNew Key = [{0}]\nBase64decode = [{1}]\n'.format(key, decoder), end=" ")
+        except Exception as err:
+            print(f'\nException occured in operation ==> {err}')
+            sys.exit('App exiting ....')
+
