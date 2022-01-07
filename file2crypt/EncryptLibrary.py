@@ -8,6 +8,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
 from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
 
 
@@ -110,71 +111,35 @@ class EncryptWithFernet():
         return dec_data
 
 
-class HazardousMaterialLayer_AEAD():
+class HazardousMaterialLayer_AEAD_ChaCha20Poly1305():
     # Authenticated encryption (AEAD)
     # Authenticated encryption with associated data (AEAD) are encryption schemes 
     # which provide both confidentiality and integrity for their ciphertext. 
     # They also support providing integrity for associated data which is not encrypted.
     
-
-    def __init__(self, print_class):
-        self.print_class_callback = print_class
-        #self.decode  = ""
-        #self.cha_cha_key = ""
-        self.hazardous_material_layer_data = ["Library alert mode "]
-
-    def encrypt_decrypt_with_ChaCha_algorithm(self):
-        data_to_encrypt = ""
-        auth_data_but_unencrypted = ""
-        key = generate_new_chacha_key_with_class_method_()
-        chacha = ChaCha20Poly1305(key)
-        nonce = os.urandom(12)
-        encrypt = chacha.encrypt(nonce, data_to_encrypt, auth_data_but_unencrypted)
-        decrypt = chacha.decrypt(nonce, encrypt, auth_data_but_unencrypted)
-
-    def encrypt_decrypt_with_aesgcm(self, bit_length):
-        # bit_length can be 128, 192, or 256-bit key. This must be kept secret.
-        # The nonce-based part of the name means that OCB requires a nonce to encrypt each message. 
-        # OCB does not require the nonce to be random; a counter, say, will work fine. 
+    # data type to encrypt : .exe, .pdf, .txt file extension. to begin with
+    # associated data: bind to data, unencrypted
         
-        # Unlike some modes, the plaintext provided to OCB can be of any length, 
-        # as can the associated data, 
-        # and OCB will encrypt the plaintext without padding it to some convenient-length string,
-        #  an approach that would yield a longer ciphertext.
-        
-        data_to_encrypt = ""
-        auth_data_but_unencrypted = ""
-        key = AESGCM.generate_key(bit_length)
-        aesgcm = AESGCM(key)
-        nonce = os.urandom(12)
-        
-        # The associated-data part of the name means that when OCB encrypts a plaintext it can bind it to some other string, 
-        # called the associated data, that is authenticated but not encrypted.
-        
-        encrypt_data = aesgcm.encrypt(nonce, data_to_encrypt, auth_data_but_unencrypted)
-        decrypt_data = aesgcm.decrypt(nonce, encrypt_data, auth_data_but_unencrypted)
-    
+    # Unlike some modes, the plaintext provided to OCB can be of any length
+    # as can the associated data
+    # and OCB will encrypt the plaintext without padding it to some convenient-length string
+    #  an approach that would yield a longer ciphertext.
 
-    # OCB solves the problem of nonce-based authenticated-encryption with associated-data (AEAD). 
-    # The associated-data part of the name means that when OCB encrypts a plaintext it can bind it to some other string, 
-    # called the associated data, that is authenticated but not encrypted.
+    def __init__(self, print_class, associated_data):
+        self.print_class_callback          = print_class
+        self.associated_data_param         = associated_data
+        self.hazardous_material_layer_data = [" Library alert mode "]
+        self.description                   = "OCB AEAD ChaCha Encryption Implementation"
+        self.author                        = "Busari Habibullaah"
+        self.nonce                         = os.urandom(12)
 
-    # The associated-data part of the name means that when OCB encrypts a plaintext it can bind it to some other string, called the associated data,
-    # OCB is a blockcipher-based mode of operation that simultaneously provides both privacy and authenticity for a user-supplied plaintext
-    #
-
-    def _generate_new_chacha20Poly1305_key_(self, print_class_callback):
+    def _generate_new_chacha20Poly1305_key_(self):
         try:
             algor = 'cryptography.exceptions.UnsupportedAlgorithm'
             from base64 import b64encode
             new_key = ChaCha20Poly1305.generate_key()
             decode = b64encode(new_key).decode()
 
-            #print_class_callback.print_with_format(new_key, decode)
-            #print_class_callback.print_format_with_index_number(new_key, decode)
-
-            #print(f'\nchacha20Poly1305 KEY = [{new_key}]', end="\r")
-            #print(f'b64decode  = [{decode}]', end=" ")
             return {
                 "decode": decode,
                 "new_key": new_key,
@@ -182,6 +147,68 @@ class HazardousMaterialLayer_AEAD():
         except Exception:
             raise UnsupportedAlgorithm('\n{0} not supported'.format(algor),[_Reasons.UNSUPPORTED_HASH, _Reasons.UNSUPPORTED_HASH])
             sys.exit('Exception occured !!!')
+
+    def encrypt_with_ChaCha_algorithm(self, nonce, encrypt_data, asssociated_data_to_encrypt):
+        key = _generate_new_chacha20Poly1305_key_()
+        data_to_encrypt = encrypt_data
+        associated_data = asssociated_data_to_encrypt
+        chacha = ChaCha20Poly1305(key)
+        encrypt = chacha.encrypt(nonce, data_to_encrypt, associated_data)
+        return encrypt
+    
+    def decrypt_with_ChaCha_algorithm(self, nonce, key_to_decrypt, encrypted_data, asssociated_data_to_encrypt):
+        associated_data = asssociated_data_to_encrypt
+        encrypt = encrypted_data
+        chacha = ChaCha20Poly1305(key_to_decrypt)
+        decrypt = chacha.decrypt(nonce, encrypt, associated_data)
+        return decrypt
+
+
+class HazardousMaterialLayer_AEAD_AESGCM():
+    def __init__():
+        self.description                   = "OCB AEAD AESGCM Encryption Implementation"
+        self.author                        = "Busari Habibullaah"
+        self.nonce                         = os.urandom(12)
+
+    def encrypt_decrypt_with_aesgcm(self, bit_length, data, associated_data_param):
+
+        # data type to encrypt : .exe, .pdf, .txt file extension. to begin with
+        # associated data: bind to data, unencrypted
+        
+        # Unlike some modes, the plaintext provided to OCB can be of any length
+        # as can the associated data
+        # and OCB will encrypt the plaintext without padding it to some convenient-length string
+        #  an approach that would yield a longer ciphertext.
+        data_to_encrypt = data
+        associated_data = self.associated_data_param
+
+        # bit_length can be 128, 192, or 256-bit key. This must be kept secret
+        key = AESGCM.generate_key(bit_length)
+        aesgcm = AESGCM(key)
+
+        # OCB does not require the nonce to be random; a counter, say, will work fine
+        # The nonce-based part of the name means that OCB requires a nonce to encrypt each message
+        nonce = os.urandom(12)
+        
+        # The associated-data part of the name means that when OCB encrypts a plaintext 
+        # it can bind it to some other string 
+        # called the associated data, that is authenticated but not encrypted.
+        
+        encrypt_data = aesgcm.encrypt(nonce, data_to_encrypt, associated_data)
+        decrypt_data = aesgcm.decrypt(nonce, encrypt_data, associated_data)
+    
+
+        # OCB solves the problem of nonce-based authenticated-encryption with associated-data (AEAD) 
+        # The associated-data part of the name means that when OCB encrypts
+        # a plaintext it can bind it to some other string, 
+        # called the associated data, that is authenticated but not encrypted.
+
+        # The associated-data part of the name means that when OCB encrypts a plaintext
+        # it can bind it to some other string, called the associated data,
+        # OCB is a blockcipher-based mode of operation that simultaneously provides 
+        # both privacy and authenticity for a user-supplied plaintext
+        
+
 
 class PrintWithFormat():
     def __init__(self):
