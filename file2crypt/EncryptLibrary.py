@@ -8,7 +8,8 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-
+#from cryptography.hazmat.primitives.ciphers.aead import AESOCB3
+from cryptography.hazmat.primitives.ciphers.aead import AESCCM
 from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
 
 
@@ -129,11 +130,13 @@ class HazardousMaterialLayer_AEAD_ChaCha20Poly1305():
         self.print_class_callback          = print_class
         self.associated_data_param         = associated_data
         self.hazardous_material_layer_data = [" Library alert mode "]
-        self.description                   = "OCB AEAD ChaCha Encryption Implementation"
+        self.description                   = "OCB AEAD ChaCha Cipher Encryption Implementation"
         self.author                        = "Busari Habibullaah"
         self.nonce                         = os.urandom(12)
 
     def _generate_new_chacha20Poly1305_key_(self):
+        # Securely generates a random ChaCha20Poly1305 key.
+        # Returns bytes A 32 byte key.
         try:
             algor = 'cryptography.exceptions.UnsupportedAlgorithm'
             from base64 import b64encode
@@ -153,14 +156,21 @@ class HazardousMaterialLayer_AEAD_ChaCha20Poly1305():
         data_to_encrypt = encrypt_data
         associated_data = asssociated_data_to_encrypt
         chacha = ChaCha20Poly1305(key)
-        encrypt = chacha.encrypt(nonce, data_to_encrypt, associated_data)
+        try:
+            encrypt = chacha.encrypt(nonce, data_to_encrypt, associated_data)
+        except OverflowError as overflow:
+            sys.exit(f'Overflow Error encounterd  ==> {overflow}')
         return encrypt
     
     def decrypt_with_ChaCha_algorithm(self, nonce, key_to_decrypt, encrypted_data, asssociated_data_to_encrypt):
         associated_data = asssociated_data_to_encrypt
         encrypt = encrypted_data
         chacha = ChaCha20Poly1305(key_to_decrypt)
-        decrypt = chacha.decrypt(nonce, encrypt, associated_data)
+        algor = 'cryptography.exceptions.InvalidTag'
+        try:
+            decrypt = chacha.decrypt(nonce, encrypt, associated_data)
+        except Exception:
+            raise InvalidTag('\n{0} an authenticated encryption tag fails to verify during decryption'.format(algor))
         return decrypt
 
 
@@ -177,7 +187,7 @@ class HazardousMaterialLayer_AEAD_AESGCM():
     # both privacy and authenticity for a user-supplied plaintext
 
     def __init__():
-        self.description                   = "OCB AEAD AESGCM Encryption Implementation"
+        self.description                   = "OCB AEAD AESGCM Cipher Encryption Implementation"
         self.author                        = "Busari Habibullaah"
         self.nonce                         = os.urandom(12)
         self.bit_length                    = '256'
@@ -208,15 +218,66 @@ class HazardousMaterialLayer_AEAD_AESGCM():
         # called the associated data, that is authenticated but not encrypted.
         associated_data = associated_data_param
         data_to_encrypt = data
-        
-        encrypt_data = aesgcm_key.encrypt(nonce, data_to_encrypt, associated_data)
+        try:
+            encrypt_data = aesgcm_key.encrypt(nonce, data_to_encrypt, associated_data)
+        except OverflowError as overflow:
+            sys.exit(f'Overflow Error encounterd  ==> {overflow}')    
         return encrypt_data
 
-    def decrypt_aesgcm_data(nonce, encrypt_data, associated_data):
-        decrypt_data = aesgcm_key.decrypt(nonce, encrypt_data, associated_data)
+    def decrypt_aesgcm_data(self, nonce, encrypt_data, associated_data):
+        algor = 'cryptography.exceptions.InvalidTag'
+        try:
+            decrypt_data = aesgcm_key.decrypt(nonce, encrypt_data, associated_data)
+        except Exception:
+            raise InvalidTag('\n{0} an authenticated encryption tag fails to verify during decryption'.format(algor))
         return decrypt_data 
 
-        
+
+class HazardousMaterialLayer_AEAD_AESOCB3():
+    def __init__(self):
+        self.description                   = "OCB AEAD AESOCB3 Cipher Encryption Implementation"
+        self.author                        = "Busari Habibullaah"
+        self.nonce                         = os.urandom(12)
+        self.bit_length                    = '256'
+
+    def generate_aesocb3_key(self):
+        key = AESOCB3.generate_key(self.bit_length)
+        aesocb3_key = AESOCB3(key)
+        return aesocb3_key
+
+    def encrypt_aesocb3_data(self, aesocb_generated_key, encrypt_data, associated_data):
+        nonce = self.nonce
+        associated_data_param = associated_data
+        encrypt_data = aesocb_generated_key.encrypt(nonce, encrypt_data, associated_data_param)
+        return encrypt_aesocb_data
+
+    def decrypt_aesocb3_data(self, aesocb_generated_key, encrypt_data, associated_data):
+        nonce = self.nonce
+        decrypt_aesocb_data = aesocb_generated_key.decrypt(nonce, encrypt_data, associated_data)
+        return decrypt_aesocb_data
+
+class HazardousMaterialLayer_AEAD_AESCCM():
+    def __init__(self):
+        self.description                   = "OCB AEAD AESCCM Cipher Encryption Implementation"
+        self.author                        = "Busari Habibullaah"
+        self.nonce                         = os.urandom(12)
+        self.bit_length                    = '256'          # key length (128, 192, 256 bit-key)
+
+    def generate_aesocb3_key(self):
+        key = AESCCM.generate_key(self.bit_length)
+        aesccm_key = AESCCM(key)
+        return aesccm_key
+    
+    def encrypt_aesccm_data(self, aesccm_generated_key, encrypt_data, associated_data):
+        nonce = self.nonce
+        associated_data_param = associated_data
+        encrypt_data = aesccm_generated_key.encrypt(nonce, encrypt_data, associated_data_param)
+        return aesccm_generated_key
+
+    def decrypt_aesocb3_data(self, aesccm_generated_key, encrypt_data, associated_data):
+        nonce = self.nonce
+        decrypt_aesccb_data = aesccm_generated_key.decrypt(nonce, encrypt_data, associated_data)
+        return decrypt_aesccb_data
 
 
 class PrintWithFormat():
