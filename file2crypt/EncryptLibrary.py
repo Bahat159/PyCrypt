@@ -165,12 +165,30 @@ class HazardousMaterialLayer_AEAD_ChaCha20Poly1305():
 
 
 class HazardousMaterialLayer_AEAD_AESGCM():
+
+    # OCB solves the problem of nonce-based authenticated-encryption with associated-data (AEAD) 
+    # The associated-data part of the name means that when OCB encrypts
+    # a plaintext it can bind it to some other string, 
+    # called the associated data, that is authenticated but not encrypted.
+
+    # The associated-data part of the name means that when OCB encrypts a plaintext
+    # it can bind it to some other string, called the associated data,
+    # OCB is a blockcipher-based mode of operation that simultaneously provides 
+    # both privacy and authenticity for a user-supplied plaintext
+
     def __init__():
         self.description                   = "OCB AEAD AESGCM Encryption Implementation"
         self.author                        = "Busari Habibullaah"
         self.nonce                         = os.urandom(12)
+        self.bit_length                    = '256'
 
-    def encrypt_decrypt_with_aesgcm(self, bit_length, data, associated_data_param):
+    def generate_aesgcm_key(self, bit_length):
+        # bit_length can be 128, 192, or 256-bit key. This must be kept secret
+        key = AESGCM.generate_key(bit_length)
+        aesgcm_generated_key = AESGCM(key)
+        return aesgcm_generated_key
+
+    def encrypt_with_aesgcm(self, data, associated_data_param):
 
         # data type to encrypt : .exe, .pdf, .txt file extension. to begin with
         # associated data: bind to data, unencrypted
@@ -179,34 +197,25 @@ class HazardousMaterialLayer_AEAD_AESGCM():
         # as can the associated data
         # and OCB will encrypt the plaintext without padding it to some convenient-length string
         #  an approach that would yield a longer ciphertext.
-        data_to_encrypt = data
-        associated_data = self.associated_data_param
-
-        # bit_length can be 128, 192, or 256-bit key. This must be kept secret
-        key = AESGCM.generate_key(bit_length)
-        aesgcm = AESGCM(key)
+        aesgcm_key = generate_aesgcm_key(self.bit_length)
 
         # OCB does not require the nonce to be random; a counter, say, will work fine
         # The nonce-based part of the name means that OCB requires a nonce to encrypt each message
-        nonce = os.urandom(12)
+        nonce = self.nonce
         
         # The associated-data part of the name means that when OCB encrypts a plaintext 
         # it can bind it to some other string 
         # called the associated data, that is authenticated but not encrypted.
+        associated_data = associated_data_param
+        data_to_encrypt = data
         
-        encrypt_data = aesgcm.encrypt(nonce, data_to_encrypt, associated_data)
-        decrypt_data = aesgcm.decrypt(nonce, encrypt_data, associated_data)
-    
+        encrypt_data = aesgcm_key.encrypt(nonce, data_to_encrypt, associated_data)
+        return encrypt_data
 
-        # OCB solves the problem of nonce-based authenticated-encryption with associated-data (AEAD) 
-        # The associated-data part of the name means that when OCB encrypts
-        # a plaintext it can bind it to some other string, 
-        # called the associated data, that is authenticated but not encrypted.
+    def decrypt_aesgcm_data(nonce, encrypt_data, associated_data):
+        decrypt_data = aesgcm_key.decrypt(nonce, encrypt_data, associated_data)
+        return decrypt_data 
 
-        # The associated-data part of the name means that when OCB encrypts a plaintext
-        # it can bind it to some other string, called the associated data,
-        # OCB is a blockcipher-based mode of operation that simultaneously provides 
-        # both privacy and authenticity for a user-supplied plaintext
         
 
 
@@ -247,4 +256,3 @@ class PrintWithFormat():
         except Exception as err:
             print(f'\nException occured in operation ==> {err}')
             sys.exit('App exiting ....')
-
