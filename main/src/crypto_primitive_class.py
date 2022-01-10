@@ -38,7 +38,7 @@ class HazardousMaterialLayer_AEAD_ChaCha20Poly1305():
     #  an approach that would yield a longer ciphertext.
 
     def __init__(self, print_class, associated_data):
-        self.print_class_callback          = print_class
+        self.print_class_callback          = print_class  # pretty printing class init
         self.associated_data_param         = associated_data
         self.hazardous_material_layer_data = [" Library alert mode "]
         self.description                   = "OCB AEAD ChaCha Cipher Encryption Implementation"
