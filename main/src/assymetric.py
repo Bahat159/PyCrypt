@@ -2,6 +2,7 @@ import os
 import sys
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.primitives.asymmetric.x448 import X448PrivateKey
 from cryptography.hazmat.primitives.asymmetric.ed448 import Ed448PrivateKey
 from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
@@ -114,7 +115,7 @@ class Ed448_signing_and_verification():
         self.author         = 'Busari Habibullaah'
         self.signed_key     = True
         self.public_key     = True
-        self.auth_message   = bytes(my authenticated message, encoding='utf8')
+        self.auth_message   = bytes('my authenticated message', encoding='utf8')
 
     def generate_private_key(self):
         if self.signed_key:
@@ -137,3 +138,65 @@ class Ed448_signing_and_verification():
         # data should be encoded in bytes()
         if signature and data != "":
             return  public_key.verify(signature, data)
+
+
+class X448_key_exchange():
+    # For most applications the shared_key should be passed to a key derivation function. 
+    # This allows mixing of additional information into the key,
+    # derivation of multiple keys, and destroys any structure that may be present.
+
+    def __init__(self):
+        self.author                 = 'Busari Habibullaah'
+        self.description            = 'X448 key Exchange.'
+        self.gen_private_key        = True
+        self.gen_public_key         = True
+        self.gen_peer_public_key    = True
+        self.info                   = bytes('handshake data', encoding='utf8')
+        self.algorithm              = hashes.SHA256()
+        self.key_length             = '32'
+
+    def generate_private_key(self):
+        if self.gen_private_key:
+            private_key = X448PrivateKey.generate()
+            return private_key
+
+    # In a real handshake the peer_public_key will be received from the
+    # other party. For this example we'll generate another private key and
+    # get a public key from that. Note that in a DH handshake both peers
+    # must agree on a common set of parameters.
+
+    def generate_peer_public_key(self):
+        if self.gen_public_key:
+            peer_public_key = X448PrivateKey.generate().public_key()
+            return peer_public_key
+
+    def agreed_shared_key(self, peer_public_key):
+        if peer_public_key:
+            shared_key = private_key.exchange(peer_public_key)
+            return shared_key
+
+    def derived_key_derivation(self, shared_key):
+        if shared_key:
+            derived_key = HKDF(algorithm=self.algorithm,length=self.key_length,salt=None,info=self.info,).derive(shared_key)
+            return derived_key
+
+    def generate_private_key_2(self):
+        # For the next handshake we MUST generate another private key.
+        private_key_2 = X448PrivateKey.generate()
+        if private_key_2:
+            return private_key_2
+
+    def generate_peer_public_key_2(self):
+        if self.gen_peer_public_key:
+            peer_public_key_2 = X448PrivateKey.generate().public_key()
+            return peer_public_key_2
+
+    def generate_shared_key(self, peer_public_key_2):
+        if peer_public_key_2:
+            shared_key_2 = private_key_2.exchange(peer_public_key_2)
+            return shared_key_2
+
+    def dervied_key_2(self, shared_key_2):
+        if shared_key_2:
+            derived_key_2 = HKDF(algorithm= self.algorithm,length=self.key_length,salt=None,info=self.info,).derive(shared_key_2)
+            return derived_key_2
