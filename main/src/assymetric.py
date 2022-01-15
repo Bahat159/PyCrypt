@@ -2,6 +2,7 @@ import os
 import sys
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.primitives.asymmetric.ed448 import Ed448PrivateKey
 from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
@@ -105,3 +106,33 @@ class Assymetric_X25519PrivateKey():
         if shared_key_2:
             derived_key_2 = HKDF(algorithm=self.algorithm,length=self.key_length,salt=None,info=self.info,).derive(shared_key_2)
             return derived_key_2
+
+
+class Ed448_signing_and_verification():
+    def __init__(self):
+        self.description    = 'Ed448 is an elliptic curve signing algorithm using EdDSA.'
+        self.author         = 'Busari Habibullaah'
+        self.signed_key     = True
+        self.public_key     = True
+        self.auth_message   = bytes(my authenticated message, encoding='utf8')
+
+    def generate_private_key(self):
+        if self.signed_key:
+            private_key = Ed448PrivateKey.generate()
+            return private_key
+
+    def sign_with_private_key(self, generated_private_key):
+        if generated_private_key:
+            signature = generated_private_key.sign(self.auth_message)
+            return signature
+
+    def generate_public_key(self):
+        if self.public_key:
+            public_key = private_key.public_key()
+            return public_key
+
+    def verify_public_key_with_message(self, signature, data):
+        # Raises InvalidSignature if verification fails
+        # data should be encoded in bytes()
+        if signature and data != "":
+            return  public_key.verify(signature, data)
