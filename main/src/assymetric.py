@@ -49,6 +49,9 @@ class Assymetric_X25519PrivateKey():
         self.author         = 'Busari Habibullaah'
         self.description    = 'Ed25519 signing'
         self.object_arg     = ''
+        self.length         = '32'
+        self.info           = bytes('handshake data', encoding='utf8')
+        self.algorithm      = hashes.SHA256()
     
     def __str__(self):
         return self.object_arg
@@ -62,6 +65,10 @@ class Assymetric_X25519PrivateKey():
         return self.object_arg
 
     def generate_peer_public_key_X25519PrivateKey(self):
+        # In a real handshake the peer_public_key will be received from the
+        # other party. For this example we'll generate another private key and
+        # get a public key from that. Note that in a DH handshake both peers
+        # must agree on a common set of parameters.
         public_key =  X25519PrivateKey.generate().public_key()
         self.object_arg = public_key
         return self.object_arg
@@ -70,5 +77,20 @@ class Assymetric_X25519PrivateKey():
         shared_key = private_key.exchange(peer_public_key)
         return shared_key
 
+    def derive_key(self):
+        # Perform key derivation.
+        derived_key = HKDF(algorithm=self.algorithm,length=int(self.length),salt=None,info=self.info,).derive(shared_key)
+        return derived_key
+    
+    def private_key_2_for_handshake(self):
+        # For the next handshake we MUST generate another private key
+        private_key_2 = X25519PrivateKey.generate()
+        return private_key_2
+    
+    def public_key_2_handshake(self):
+        peer_public_key_2 = X25519PrivateKey.generate().public_key()
+        return peer_public_key_2
 
-
+    def shared_key_2(self):
+        shared_key_2 = private_key_2.exchange(peer_public_key_2)
+        return shared_key_2
