@@ -1,5 +1,8 @@
 import os
 import sys
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 
@@ -41,3 +44,18 @@ class Assymetric_Ed25519_signing():
         sign_and_verify = public_key.verify(signature, auth_message)
         return sign_and_verify
 
+class Assymetric_X25519PrivateKey():
+    def __init__(self):
+        self.author         = 'Busari Habibullaah'
+        self.description    = 'Ed25519 signing'
+    
+    def generate_X25519PrivateKey(self):
+        return X25519PrivateKey.generate()
+
+    def generate_public_key_X25519PrivateKey():
+        return X25519PrivateKey.generate().public_key()
+
+
+#my_new_crypto_call = Assymetric_X25519PrivateKey()
+#my_new_crypto_call.generate_X25519PrivateKey()
+#print(my_new_crypto_call.generate_X25519PrivateKey())
