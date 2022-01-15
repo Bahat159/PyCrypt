@@ -122,6 +122,7 @@ class Ed448_signing_and_verification():
             return private_key
 
     def sign_with_private_key(self, generated_private_key):
+        # (bytes) – The signature to verify.
         if generated_private_key:
             signature = generated_private_key.sign(self.auth_message)
             return signature
