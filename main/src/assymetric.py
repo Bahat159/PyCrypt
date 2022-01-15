@@ -46,12 +46,13 @@ class Assymetric_Ed25519_signing():
 
 class Assymetric_X25519PrivateKey():
     def __init__(self):
-        self.author         = 'Busari Habibullaah'
-        self.description    = 'Ed25519 signing'
-        self.object_arg     = ''
-        self.key_length     = '32'
-        self.info           = bytes('handshake data', encoding='utf8')
-        self.algorithm      = hashes.SHA256()
+        self.author                 = 'Busari Habibullaah'
+        self.description            = 'Ed25519 signing'
+        self.object_arg             = ''
+        self.key_length             = '32'
+        self.info                   = bytes('handshake data', encoding='utf8')
+        self.algorithm              = hashes.SHA256()
+        self.generate_second_key    = True
     
     def __str__(self):
         return self.object_arg
@@ -61,8 +62,9 @@ class Assymetric_X25519PrivateKey():
 
     def generate_X25519PrivateKey(self):
         private_key =  X25519PrivateKey.generate()
-        self.object_arg = private_key
-        return self.object_arg
+        if private_key:
+            self.object_arg = private_key
+            return self.object_arg
 
     def generate_peer_public_key_X25519PrivateKey(self):
         # In a real handshake the peer_public_key will be received from the
@@ -74,13 +76,15 @@ class Assymetric_X25519PrivateKey():
         return self.object_arg
 
     def generate_shared_key(self, peer_public_key):
-        shared_key = private_key.exchange(peer_public_key)
-        return shared_key
+        if peer_public_key:
+            shared_key = private_key.exchange(peer_public_key)
+            return shared_key
 
     def derive_key(self, shared_key):
         # Perform key derivation.
-        derived_key = HKDF(algorithm=self.algorithm,length=int(self.key_length),salt=None,info=self.info,).derive(shared_key)
-        return derived_key
+        if shared_key:
+            derived_key = HKDF(algorithm=self.algorithm,length=int(self.key_length),salt=None,info=self.info,).derive(shared_key)
+            return derived_key
     
     def private_key_2_for_handshake(self):
         # For the next handshake we MUST generate another private key
@@ -88,13 +92,16 @@ class Assymetric_X25519PrivateKey():
         return private_key_2
     
     def public_key_2_handshake(self):
-        peer_public_key_2 = X25519PrivateKey.generate().public_key()
-        return peer_public_key_2
+        if self.generate_second_key:
+            peer_public_key_2 = X25519PrivateKey.generate().public_key()
+            return peer_public_key_2
 
     def shared_key_2(self, peer_public_key_2):
-        shared_key_2 = private_key_2.exchange(peer_public_key_2)
-        return shared_key_2
+        if peer_public_key_2:
+            shared_key_2 = private_key_2.exchange(peer_public_key_2)
+            return shared_key_2
 
     def derived_key_2(self, shared_key_2):
-        derived_key_2 = HKDF(algorithm=self.algorithm,length=self.key_length,salt=None,info=self.info,).derive(shared_key_2)
-        return derived_key_2
+        if shared_key_2:
+            derived_key_2 = HKDF(algorithm=self.algorithm,length=self.key_length,salt=None,info=self.info,).derive(shared_key_2)
+            return derived_key_2
