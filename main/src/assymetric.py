@@ -48,14 +48,27 @@ class Assymetric_X25519PrivateKey():
     def __init__(self):
         self.author         = 'Busari Habibullaah'
         self.description    = 'Ed25519 signing'
+        self.object_arg     = ''
     
+    def __str__(self):
+        return self.object_arg
+
+    def __repr__(self):
+        return self.object_arg
+
     def generate_X25519PrivateKey(self):
-        return X25519PrivateKey.generate()
+        private_key =  X25519PrivateKey.generate()
+        self.object_arg = private_key
+        return self.object_arg
 
-    def generate_public_key_X25519PrivateKey():
-        return X25519PrivateKey.generate().public_key()
+    def generate_peer_public_key_X25519PrivateKey(self):
+        public_key =  X25519PrivateKey.generate().public_key()
+        self.object_arg = public_key
+        return self.object_arg
+
+    def generate_shared_key(self, peer_public_key):
+        shared_key = private_key.exchange(peer_public_key)
+        return shared_key
 
 
-#my_new_crypto_call = Assymetric_X25519PrivateKey()
-#my_new_crypto_call.generate_X25519PrivateKey()
-#print(my_new_crypto_call.generate_X25519PrivateKey())
+
