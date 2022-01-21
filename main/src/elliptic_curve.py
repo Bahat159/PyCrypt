@@ -9,6 +9,9 @@ from cryptography.hazmat.primitives.asymmetric import utils
 # Elliptic curves operations are also significantly faster; 
 # elliptic curve diffie-hellman is faster than diffie-hellman.
 #
+# Curves with a size of less than 224 bits should not be used. 
+# You should strongly consider using curves of at least 224 bits.
+#
 # ANS X9.62 defines methods for digital signature generation and verification using the Elliptic 
 # Curve Digital Signature Algorithm (ECDSA).
 #
