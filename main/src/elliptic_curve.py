@@ -7,6 +7,9 @@ from cryptography.hazmat.primitives.asymmetric import utils
 # ANS X9.62 defines methods for digital signature generation and verification using the Elliptic 
 # Curve Digital Signature Algorithm (ECDSA).
 #
+# ECDSA requires that the private/public key pairs used for digital signature generation 
+# and verification be generated with respect to a particular set of domain parameters.
+#
 # Note that while elliptic curve keys can be used for both signing and key exchange, this is bad cryptographic practice. 
 # Instead, users should generate separate signing and ECDH keys.
 
@@ -44,7 +47,7 @@ class Elliptic_Curve_Signature_Algorithms():
             return private_key.sign(digest,ec.ECDSA(utils.Prehashed(self.hash))) 
     
 
-    def hash_and_sign_large_file_with_public_key(self, public_key, hash_type, data_to_hash, more_data_to_hash = None):
+    def hash_and_sign_large_file_with_public_key(self, public_key, signature, hash_type, data_to_hash, more_data_to_hash = None):
         hasher = hashes.Hash(hash_type)
         data_to_has_in_bytes = bytes(data_to_hash)
         more_data_to_hash_in_bytes = bytes(more_data_to_hash)
@@ -52,7 +55,7 @@ class Elliptic_Curve_Signature_Algorithms():
         hasher.update(more_data_to_hash_in_bytes)
         digest = hasher.finalize()
         if digest:
-            return public_key.verify(sig, digest, ec.ECDSA(utils.Prehashed(self.hash)))
+            return public_key.verify(signature, digest, ec.ECDSA(utils.Prehashed(self.hash)))
 
 
     
