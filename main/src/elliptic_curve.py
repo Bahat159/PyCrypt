@@ -5,6 +5,10 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives.asymmetric import utils
 
+
+# Elliptic curves operations are also significantly faster; 
+# elliptic curve diffie-hellman is faster than diffie-hellman.
+#
 # ANS X9.62 defines methods for digital signature generation and verification using the Elliptic 
 # Curve Digital Signature Algorithm (ECDSA).
 #
