@@ -4,9 +4,12 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric import utils
 
+# ANS X9.62 defines methods for digital signature generation and verification using the Elliptic 
+# Curve Digital Signature Algorithm (ECDSA).
+#
 # Note that while elliptic curve keys can be used for both signing and key exchange, this is bad cryptographic practice. 
 # Instead, users should generate separate signing and ECDH keys.
-#
+
 class Elliptic_Curve_Signature_Algorithms():
     def __init__(self):
         self.author             = 'Busari Habibullaah'
