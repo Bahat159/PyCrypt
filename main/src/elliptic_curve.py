@@ -119,3 +119,59 @@ class Elliptic_Curve_Key_Exchange_algorithm():
         else:
             return False
 
+
+# ECDHE (or EECDH), the ephemeral form of this exchange, 
+# is strongly preferred over simple ECDH and provides forward secrecy when used. 
+# You must generate a new private key using generate_private_key() 
+# for each exchange() when performing an ECDHE key exchange. An example of the ephemeral form:
+
+class ECDHE_key_Exchange_Ephemeral_Form:
+    def __init__(self):
+        self.ephemeral      = True
+        self.key_alogrithm  = hashes.SHA256()
+        self.key_length     = 32
+        self.handshake_data = bytes('Handshake Data')
+    
+    # Generate a private key for use in the exchange.
+    def generate_private_key(self):
+        if self.ephemeral:
+            private_key = ec.generate_private_key(ec.SECP384R1())
+        return private_key
+    
+    # In a real handshake the peer_public_key will be received from the
+    # other party. For this example we'll generate another private key
+    # and get a public key from that.
+    def generate_peer_public_key(self):
+        peer_public_key = ec.generate_private_key(ec.SECP384R1()).public_key()
+        return peer_public_key
+    
+    def generate_shared_key(self, private_key):
+        if private_key:
+            shared_key = private_key.exchange(ec.ECDH(), peer_public_key)
+        return private_key
+    
+    # Perform key derivation.
+    def perform_key_derivation(self, shared_key):
+        if shared_key:
+            derived_key = HKDF(algorithm=self.key_alogrithm,length=self.key_length,salt=None,info=self.handshake_data,).derive(shared_key)
+        return derived_key
+    
+    # For the next handshake we MUST generate another private key.
+    def generate_handshake_private_key(self):
+        private_key_2 = ec.generate_private_key(ec.SECP384R1())
+        return private_key_2
+    
+    def generate_handshake_peer_public_key(self, handshake_peer_public_key = True):
+        if handshake_peer_public_key:
+            peer_public_key_2 = ec.generate_private_key(ec.SECP384R1()).public_key()
+        return peer_public_key_2
+    
+    def generate_handshake_shared_key(self, peer_public_key_2, handshale_shared_key = True):
+        if handshale_shared_key:
+            shared_key_2 = private_key_2.exchange(ec.ECDH(), peer_public_key_2)
+        return shared_key_2
+    
+    def generate_handshake_derived_key(self, shared_key_2):
+        if shared_key_2:
+            derived_key_2 = HKDF(algorithm=self.key_alogrithm,length=self.key_length,salt=None,info=self.handshake_data,).derive(shared_key_2)
+        return shared_key_2
