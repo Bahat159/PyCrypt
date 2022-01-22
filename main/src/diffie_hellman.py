@@ -4,6 +4,13 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
 
 # For security and performance reasons we suggest using ECDH instead of DH where possible.
+# Diffie-Hellman key exchange (D–H) is a method that allows two parties to 
+# jointly agree on a shared secret using an insecure channel.
+#
+# This example does not give forward secrecy and is only provided 
+# as a demonstration of the basic Diffie-Hellman construction. 
+#
+# For real world applications always use the ephemeral form described after this example.
 
 class Diffie_Hellman_key_exchange:
     def __init__(self):
@@ -65,3 +72,21 @@ class Diffie_Hellman_key_exchange:
                 return True
 
 
+class Diffie_Hellman_key_exchange_Ephemeral_Form:
+    def __init__(self):
+        self.key_size  = int('2048')
+        self.generator = int('2')
+    
+    # Generate some parameters. These can be reused.
+
+    def generate_parameters(self, use_parameters = True):
+        if use_parameters:
+            parameters = dh.generate_parameters(generator=self.generator, key_size=self.key_size)
+        return parameters
+    
+    # Generate a private key for use in the exchange.
+
+    def generate_server_private_key(self, parameters, use_server_private_key = True):
+        if use_server_private_key:
+            server_private_key = parameters.generate_private_key()
+        return server_private_key
