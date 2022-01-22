@@ -90,3 +90,19 @@ class Diffie_Hellman_key_exchange_Ephemeral_Form:
         if use_server_private_key:
             server_private_key = parameters.generate_private_key()
         return server_private_key
+    
+    def generate_private_key(self, use_peer_private_key = True):
+        if use_peer_private_key:
+            peer_private_key = parameters.generate_private_key()
+        return peer_private_key
+    
+    # In a real handshake the peer is a remote client. For this
+    # example we'll generate another local private key though. Note that in
+    # a DH handshake both peers must agree on a common set of parameters.
+
+    def generate_shared_key(self, server_private_key, peer_private_key, use_shared_key = True):
+        if use_shared_key:
+            shared_key = server_private_key.exchange(peer_private_key.public_key())
+        return shared_key
+    
+    
