@@ -91,3 +91,8 @@ class RSA_Key_Algorithm:
         if decrypt_message:
             plaintext = private_key.decrypt(ciphertext, padding.OAEP(mgf=padding.MGF1(algorithm=self.hash_type),algorithm=self.hash_type,label=None))
         return plaintext
+
+    def decryption_verification(self, plaintext, message, decrypt_verification = True):
+        if decrypt_verification:
+            if plaintext == message:
+                return True
