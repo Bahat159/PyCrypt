@@ -87,28 +87,39 @@ class Diffie_Hellman_key_exchange_Ephemeral_Form:
             parameters = dh.generate_parameters(generator=self.generator, key_size=self.key_size)
         return parameters
     
-    # Generate a private key for use in the exchange.
+    # Generate a public key for use in the exchange.
 
-    def generate_server_private_key(self, parameters, use_server_private_key = True):
-        if use_server_private_key:
-            server_private_key = parameters.generate_private_key()
-        return server_private_key
+
+    def generate_private_key(self, parameters, use_private_key = True):
+        if use_private_key:
+            private_key = parameters.generate_private_key()
+        return private_key
     
-    def generate_private_key(self, use_peer_private_key = True):
-        if use_peer_private_key:
-            peer_private_key = parameters.generate_private_key()
-        return peer_private_key
+    def generate_peer_public_key(self, parameters, use_peer_public_key = True):
+        if use_peer_public_key:
+            peer_public_key = parameters.generate_private_key().public_key()
+        return peer_public_key
+    
+
+    def generate_shared_key(self, private_key, peer_public_key, use_shared_key = True):
+        if use_shared_key:
+            shared_key = private_key.exchange(peer_public_key)
+        return shared_key
     
     # In a real handshake the peer is a remote client. For this
     # example we'll generate another local private key though. Note that in
     # a DH handshake both peers must agree on a common set of parameters.
-
-    def generate_shared_key(self, server_private_key, peer_private_key, use_shared_key = True):
-        if use_shared_key:
-            shared_key = server_private_key.exchange(peer_private_key.public_key())
-        return shared_key
     
     def perform_key_derivation(self, shared_key, use_key_derviation = True):
         if use_key_derviation:
             derived_key = HKDF(algorithm=self.algorithm_type,length=self.key_length,salt=None,info=self.handshake_data,).derive(shared_key)
         return shared_key
+    
+    # For the next handshake we MUST generate another private key, but
+    # we can reuse the parameters.
+
+    def generate_derived_key_2(self, shared_key_2):
+        if shared_key_2:
+            derived_key_2 = HKDF(algorithm=self.algorithm_type,length=self.key_length,salt=None,info=self.handshake_data,).derive(shared_key_2)
+        return shared_key_2
+    
