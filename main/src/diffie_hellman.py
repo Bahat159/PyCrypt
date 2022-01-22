@@ -76,6 +76,9 @@ class Diffie_Hellman_key_exchange_Ephemeral_Form:
     def __init__(self):
         self.key_size  = int('2048')
         self.generator = int('2')
+        self.key_length = int('32')
+        self.algorithm_type = hashes.SHA256()
+        self.handshake_data = bytes('handshake data')
     
     # Generate some parameters. These can be reused.
 
@@ -105,4 +108,7 @@ class Diffie_Hellman_key_exchange_Ephemeral_Form:
             shared_key = server_private_key.exchange(peer_private_key.public_key())
         return shared_key
     
-    
+    def perform_key_derivation(self, shared_key, use_key_derviation = True):
+        if use_key_derviation:
+            derived_key = HKDF(algorithm=self.algorithm_type,length=self.key_length,salt=None,info=self.handshake_data,).derive(shared_key)
+        return shared_key
