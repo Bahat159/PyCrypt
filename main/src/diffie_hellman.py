@@ -50,9 +50,18 @@ class Diffie_Hellman_key_exchange:
     # And now we can demonstrate that the handshake performed in the
     # opposite direction gives the same final value
 
-    def perform_data_handshake_with_public_key(self, peer_private_key, server_private_key, same_shared_key = True):
+    def perform_data_handshake_with_key(self, peer_private_key, server_private_key, same_shared_key = True):
         if same_shared_key:
             same_shared_key = peer_private_key.exchange(server_private_key.public_key())
         return same_shared_key
+    
+    def perform_handshake_with_encrypt_algorithm(self, same_shared_key):
+        same_derived_key = HKDF(algorithm=self.algorithm_type,length=self.key_length,salt=None,info=self.handshake_data,).derive(same_shared_key)
+        return same_derived_key
+
+    def verfiy_data_exchange(self, derived_key, same_derived_key):
+        if derived_key and same_derived_key:
+            if derived_key == same_derived_key:
+                return True
 
 
