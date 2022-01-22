@@ -36,6 +36,8 @@ class RSA_Key_Algorithm:
             private_key = rsa.generate_private_key(public_exponent=self.public_exponent,key_size=self.key_size,)
         return private_key
     
+    # Key Loading
+    
     # If you already have an on-disk key in the PEM format 
     # (which are recognizable by the distinctive -----BEGIN {format}----- and -----END {format}----- markers), 
     # you can load it:
@@ -45,6 +47,8 @@ class RSA_Key_Algorithm:
             private_key = serialization.load_pem_private_key(key_file.read(),password=file_passsword,)
         return private_key
     
+    # Key serializatio
+    # If you have a private key that you’ve loaded you can use private_bytes() to serialize the key.
 
     def key_serialization_with_password(self, password_inuse = True):
         if password_inuse:
@@ -57,11 +61,20 @@ class RSA_Key_Algorithm:
             pem = private_key.private_bytes(encoding=self.serialization_encoding,format=self.key_serialization_format_no_password,encryption_algorithm=self.serialze_with_no_pass_encryption_algorithm)
         return pem.splitlines()[0]
     
+    # Message signing
+    # This allows anyone with the public key to verify that the message 
+    # was created by someone who possesses the corresponding private key.
+    # RSA signatures require a specific hash function, and padding to be used.
 
     def message_signature(self, sign_message = True):
         if sign_message:
             signature = private_key.sign(self.message_to_sign,padding.PSS(mgf=padding.MGF1(self.hash_type),salt_length=self.salt_key_length),self.hash_type)
         return signature
+
+    # Key verification 
+    # If you have a public key, a message, a signature, 
+    # and the signing algorithm that was used you can check that the private key 
+    # associated with a given public key was used to sign that specific message
 
     def serialized_key_verification(self, private_key, signature, message, verify_key = True):
         if private_key:
@@ -79,6 +92,8 @@ class RSA_Key_Algorithm:
             public_key.verify(signature, digest, padding.PSS(mgf=padding.MGF1(self.hash_type),salt_length=self.salt_key_length),utils.Prehashed(chosen_hash))
             return public_key
     
+    # encryption is performed using the public key, meaning anyone can encrypt data. 
+    # The data is then decrypted using the private key.
 
     def encrypt_message_data(self, public_key, message_to_encrypt, encrypt_data = True):
         if encrypt_data:
@@ -86,6 +101,8 @@ class RSA_Key_Algorithm:
             ciphertext = public_key.encrypt(message, padding.OAEP(mgf=padding.MGF1(algorithm=self.hash_type),algorithm=self.hash_type,label=None))
         return ciphertext
     
+
+    # Once you have an encrypted message, it can be decrypted using the private key.
 
     def decrypt_message_data(self, private_key, ciphertext, decrypt_message = True):
         if decrypt_message:
