@@ -50,3 +50,13 @@ class DSA_Algoirthm:
             public_key.verify(signature, data, self.hash_algorithm)
         return public_key
     
+
+    def verify_big_data(self, signature, data, use_verify_big_data = True):
+        if use_verify_big_data:
+            chosen_hash = self.hash_algorithm
+            hasher = hashes.Hash(chosen_hash)
+            hasher.update(data)
+            hasher.update(data)
+            digest = hasher.finalize()
+            public_key.verify(signature, digest, utils.Prehashed(chosen_hash))
+        return public_key
