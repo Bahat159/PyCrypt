@@ -1,5 +1,6 @@
 import hashlib
 from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import constant_time
 from cryptography.hazmat.primitives.asymmetric import dh
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from cryptography.hazmat.primitives.serialization import load_der_private_key
@@ -70,7 +71,7 @@ class Asymmetric_Utilities:
     def __init__(self):
         self.public_exponent = 65537
         self.key_size        = 2048
-        self.message         = bytes("A message I want to sign")
+        self.message         = bytes("A message I want to sign", encoding="utf8")
         self.encoding_type   = hashlib.sha256()
         self.salt_length     = padding.PSS.MAX_LENGTH
     
@@ -112,3 +113,7 @@ class Asymmetric_Utilities:
 # see Coda Hale’s blog post [ https://codahale.com/a-lesson-in-timing-attacks/ ]
 # about the timing attacks on KeyCzar and Java’s MessageDigest.isEqual().
 #
+first_data = bytes('foo', encoding="utf8")
+second_data = bytes('foo', encoding="utf8")
+def check_if_equal(first_data, second_data):
+    return constant_time.bytes_eq(first_data,second_data)
