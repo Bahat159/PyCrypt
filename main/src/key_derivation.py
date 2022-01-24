@@ -117,6 +117,12 @@ class Fixed_cost_algorithms:
             return ckdf.verify(self.input_key, key)
 
 
+# Warning
+#
+# ConcatKDFHMAC should not be used for password storage.
+#
+# Similar to ConcatKFDHash but uses an HMAC function instead.
+
 class ConcatKDFHMAC:
     def __init__(self):
         self.salt          = os.urandom(int('16'))
