@@ -27,7 +27,7 @@ class Elliptic_Curve_Signature_Algorithms():
     def __init__(self):
         self.author             = 'Busari Habibullaah'
         self.gen_private_key    = True
-        self.data               = bytes('this is some data I\'d like to sign')
+        self.data               = bytes('this is some data I\'d like to sign', encoding="utf8")
         self.hash               = hashes.SHA256()
     
     def generate_private_key(self):
@@ -46,23 +46,23 @@ class Elliptic_Curve_Signature_Algorithms():
     # If your data is too large to be passed in a single call, 
     # you can hash it separately and pass that value using Prehashed.
 
-    def hash_and_sign_large_file_with_private_key(self, private_key, hash_type, data_to_hash, more_data_to_hash = None):
+    def hash_and_sign_large_file_with_private_key(self, private_key, hash_type, data, more_data = None):
         hasher  = hashes.Hash(hash_type)
-        bytes_to_hash = bytes(data_to_hash)
-        more_data_to_hash = bytes(more_data_to_hash)
+        bytes_to_hash = bytes(data)
+        more_data = bytes(more_data)
         hasher.update(bytes_to_hash)
-        hasher.update(more_data_to_hash)
+        hasher.update(more_data)
         digest = hasher.finalize()
         if digest:
             return private_key.sign(digest,ec.ECDSA(utils.Prehashed(self.hash))) 
     
 
-    def hash_and_sign_large_file_with_public_key(self, public_key, signature, hash_type, data_to_hash, more_data_to_hash = None):
+    def hash_and_sign_large_file_with_public_key(self, public_key, signature, hash_type, data, more_data = None):
         hasher = hashes.Hash(hash_type)
-        data_to_has_in_bytes = bytes(data_to_hash)
-        more_data_to_hash_in_bytes = bytes(more_data_to_hash)
+        data_to_has_in_bytes = bytes(data)
+        more_data_in_bytes = bytes(more_data)
         hasher.update(data_to_has_in_bytes)
-        hasher.update(more_data_to_hash_in_bytes)
+        hasher.update(more_data_in_bytes)
         digest = hasher.finalize()
         if digest:
             return public_key.verify(signature, digest, ec.ECDSA(utils.Prehashed(self.hash)))
@@ -77,7 +77,7 @@ class Elliptic_Curve_Key_Exchange_algorithm():
         self.exchange_algorthim = True
         self.hash_algorithm     = hashes.SHA256()
         self.key_length         = 32   # can be of any length (e.g, 1024, 2048, 256 and so on)
-        self.data_to_encode     = bytes('handshake data')
+        self.data_to_encode     = bytes('handshake data', encoding="utf8")
     
     def generate_server_private_key(self, generate_server_private_key = True):
         if generate_server_private_key:
@@ -137,7 +137,7 @@ class ECDHE_key_Exchange_Ephemeral_Form:
         self.ephemeral      = True
         self.key_alogrithm  = hashes.SHA256()
         self.key_length     = 32
-        self.handshake_data = bytes('Handshake Data')
+        self.handshake_data = bytes('Handshake Data', encoding="utf8")
     
     # Generate a private key for use in the exchange.
     def generate_private_key(self):
