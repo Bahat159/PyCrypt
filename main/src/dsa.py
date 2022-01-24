@@ -12,7 +12,7 @@ from cryptography.hazmat.primitives.asymmetric import utils
 class DSA_Algoirthm:
     def __init__(self):
         self.key_size = int('1024')
-        self.data     = bytes("this is some data I'd like to sign")
+        self.data     = bytes("this is some data I'd like to sign", encoding="utf8")
         self.hash_algorithm = hashes.SHA256()
     
     # Generate Private Key
