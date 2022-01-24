@@ -58,3 +58,4 @@ def check_der_parameter_type(parameters_der_data):
     parameters = load_der_parameters(parameters_der_data)
     if parameters:
         check_der_paramters_type = check_data_type(parameters, der_parameters_type)
+    return check_der_paramters_type
