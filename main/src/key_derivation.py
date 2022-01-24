@@ -2,7 +2,9 @@ import os
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives.kdf.concatkdf import ConcatKDFHMAC
 from cryptography.hazmat.primitives.kdf.concatkdf import ConcatKDFHash
+
 
 # PBKDF2 (Password Based Key Derivation Function 2) is typically used 
 # for deriving a cryptographic key from a password. 
@@ -112,6 +114,35 @@ class Fixed_cost_algorithms:
     
     def verify_ckdf_key_data(self, ckdf, key, use_verify_ckdf_key = True):
         if use_verify_ckdf_key:
+            return ckdf.verify(self.input_key, key)
+
+
+class ConcatKDFHMAC:
+    def __init__(self):
+        self.salt          = os.urandom(int('16'))
+        self.encoding_type = hashes.SHA256()
+        self.salt_length   = int('32')
+        self.input_key     = bytes("input key", encoding="utf8")
+        self.otherinfo     = bytes("concatkdf-example", encoding="utf8")
+    
+    def generate_cdkf(self, use_cdkf = True):
+        if use_cdkf:
+            ckdf = ConcatKDFHMAC(algorithm=self.encoding_type,length=self.salt_length,salt=salt,otherinfo=self.otherinfo)
+        return cdkf
+    
+
+    def generate_key(self, ckdf, use_generate_key = True):
+        if use_generate_key:
+            key = ckdf.derive(self.input_key)
+        return key
+    
+    def second_ckdf(self, use_second_ckdf = True):
+        if use_second_ckdf:
+            ckdf = ConcatKDFHMAC(algorithm=self.encoding_type,length=self.salt_length,salt=salt,otherinfo=self.otherinfo)
+        return ckdf
+    
+    def verfiy_key(self, key, use_verify_key = True):
+        if use_verify_key:
             return ckdf.verify(self.input_key, key)
 
 
