@@ -1,3 +1,46 @@
 import os
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.backends import default_backend
+
+# PBKDF2 (Password Based Key Derivation Function 2) is typically used 
+# for deriving a cryptographic key from a password. 
+# It may also be used for key storage, 
+# but an alternate key storage KDF such as Scrypt is generally considered a better solution.
+
+# Basic Usage
+# myclass_obj = Key_derivation()
+# my_random_salt = myclass_obj.genreate_random_salts()
+# print(my_random_salt)
+# output_data = myclass_obj.derive_key(my_random_salt)
+# print(output_data)
+# final_report = myclass_obj.verfiy_derived_key(my_random_salt, output_data)
+# print(final_report)
+#
+#
+# Salts should be randomly generated
+class Key_derivation:
+    def __init__(self):
+        self.salt_length  = int('128')
+        self.encode_type  = hashes.SHA256()
+        self.key_length   = int('32')
+        self.iteration    = int('100000')
+        self.key_password = bytes('my great password', encoding="utf8")
+
+    
+    # Salts should be randomly generated
+    def genreate_random_salts(self):
+        salt = os.urandom(self.salt_length)
+        return salt
+    
+    def derive_key(self, salt):
+        kdf = PBKDF2HMAC(algorithm=self.encode_type,length=self.key_length,salt=salt,iterations=self.iteration)
+        if kdf:
+            key = kdf.derive(self.key_password)
+        return key
+    
+    def verfiy_derived_key(self, salt, key):
+        kdf = PBKDF2HMAC(algorithm=self.encode_type,length=self.key_length,salt=salt,iterations=self.iteration)
+        if kdf:
+            verified_key = kdf.verify(self.key_password, key)
+        return verified_key
