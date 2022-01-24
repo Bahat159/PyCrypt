@@ -1,10 +1,13 @@
+import hashlib
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import dh
-from cryptography.hazmat.primitives.asymmetric import dsa, rsa
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from cryptography.hazmat.primitives.serialization import load_der_private_key
 from cryptography.hazmat.primitives.serialization import load_der_public_key
 from cryptography.hazmat.primitives.serialization import load_pem_parameters
 from cryptography.hazmat.primitives.serialization import load_der_parameters
+from cryptography.hazmat.primitives.asymmetric import (dsa, rsa, padding, utils)
+
 
 key_type               = rsa.RSAPublicKey
 parameter_type         = dh.DHParameters
@@ -59,3 +62,37 @@ def check_der_parameter_type(parameters_der_data):
     if parameters:
         check_der_paramters_type = check_data_type(parameters, der_parameters_type)
     return check_der_paramters_type
+
+
+# Asymmetric Utilities
+
+class Asymmetric_Utilities:
+    def __init__(self):
+        self.public_exponent = 65537
+        self.key_size        = 2048
+        self.message         = bytes("A message I want to sign")
+        self.encoding_type   = hashlib.sha256()
+        self.salt_length     = padding.PSS.MAX_LENGTH
+    
+    def generate_private_key(self, use_assymetric_private_key = True):
+        if use_assymetric_private_key:
+            private_key = rsa.generate_private_key(public_exponent=self.public_exponent,key_size=self.key_size,)
+        return private_key
+    
+    def generate_public_key(self, private_key, use_generate_public_key = True):
+        if use_generate_public_key:
+            public_key = private_key.public_key()
+        return public_key
+    
+    def digest_prehased_message(self):
+        prehashed_msg = self.encoding_type(self.message).digest()
+        return prehashed_msg
+    
+    def message_signature(self, use_sign_message = True):
+        if use_sign_message:
+            signature = private_key.sign(prehashed_msg,padding.PSS(mgf=padding.MGF1(self.encoding_type()),salt_length=self.salt_length),utils.Prehashed(self.encoding_type))
+        return signature
+    
+    def key_verification(self, signature, public_key, use_key_verification = True):
+        if use_key_verification:
+            return public_key.verify(signature,prehashed_msg,padding.PSS(mgf=padding.MGF1(self.encoding_type),salt_length=self.salt_length),utils.Prehashed(self.encoding_type))
