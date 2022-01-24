@@ -22,9 +22,9 @@ class RSA_Key_Algorithm:
         self.salt_key_length            = padding.PSS.MAX_LENGTH
         self.key_size                   = int('2048')  # (key size can be of anylength, 1024, 2048, 4096 and so on)
         self.public_exponent            = int('65537')
-        self.message_to_sign            = bytes('Your message to sign')
-        self.message_to_sign_and_verify = bytes('Your message to sign and verify')
-        self.key_serialize_password     = bytes('your password')
+        self.message_to_sign            = bytes('Your message to sign', encoding="utf8")
+        self.message_to_sign_and_verify = bytes('Your message to sign and verify', encoding="utf8")
+        self.key_serialize_password     = bytes('your password', encoding="utf8")
         self.serialization_encoding     = serialization.Encoding.PEM
         self.key_serialization_format   = serialization.PrivateFormat.PKCS8
         self.serialze_with_no_pass_encryption_algorithm  = serialization.NoEncryption()
@@ -97,7 +97,7 @@ class RSA_Key_Algorithm:
 
     def encrypt_message_data(self, public_key, message_to_encrypt, encrypt_data = True):
         if encrypt_data:
-            message = bytes(message_to_encrypt)
+            message = bytes(message_to_encrypt, encoding="utf8")
             ciphertext = public_key.encrypt(message, padding.OAEP(mgf=padding.MGF1(algorithm=self.hash_type),algorithm=self.hash_type,label=None))
         return ciphertext
     
