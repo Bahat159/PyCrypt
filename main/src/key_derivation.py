@@ -1,7 +1,8 @@
 import os
 from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives.kdf.concatkdf import ConcatKDFHash
 
 # PBKDF2 (Password Based Key Derivation Function 2) is typically used 
 # for deriving a cryptographic key from a password. 
@@ -78,3 +79,39 @@ class Scrypt:
     
     def verify_key(self, kdf, key):
         return kdf.verify(self.my_password, key)
+
+
+# ConcatKDF
+#
+# ConcatKDFHash (Concatenation Key Derivation Function) 
+# is defined by the NIST Special Publication NIST SP 800-56Ar2 document, 
+# to be used to derive keys for use after a Key Exchange negotiation operation.
+
+class Fixed_cost_algorithms:
+    def __init__(self):
+        self.key_length    = int('32')
+        self.input_key     = bytes("input key", encoding="utf8")
+        self.other_info    = bytes("concatkdf-example", encoding="utf8")
+        self.encoding_type = hashes.SHA256()
+
+    
+    def ckdf(self, use_ckdf = True):
+        if use_ckdf:
+            ckdf = ConcatKDFHash(algorithm=self.encoding_type,length=self.key_length,otherinfo= self.other_info)
+        return ckdf
+    
+    def derive_key(self, ckdf, use_derive_key = True):
+        if use_derive_key:
+            key = ckdf.derive(self.input_key)
+        return key
+    
+    def second_ckdf(self, use_second_ckdf = True):
+        if use_second_ckdf:
+            ckdf = ConcatKDFHash(algorithm=self.encoding_type,length=self.key_length,otherinfo=self.other_info)
+        return ckdf
+    
+    def verify_ckdf_key_data(self, ckdf, key, use_verify_ckdf_key = True):
+        if use_verify_ckdf_key:
+            return ckdf.verify(self.input_key, key)
+
+
