@@ -115,5 +115,11 @@ class Asymmetric_Utilities:
 #
 first_data = bytes('foo', encoding="utf8")
 second_data = bytes('foo', encoding="utf8")
+
 def check_if_equal(first_data, second_data):
     return constant_time.bytes_eq(first_data,second_data)
+
+# Example Usage
+#
+# check_result = check_if_equal(first_data, second_data)
+# print(check_result)
