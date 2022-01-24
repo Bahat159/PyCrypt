@@ -18,7 +18,7 @@ class Diffie_Hellman_key_exchange:
         self.generator = int('2')
         self.key_length  = int('32')
         self.algorithm_type = hashes.SHA256()
-        self.handshake_data = bytes('handshake data')
+        self.handshake_data = bytes('handshake data', encoding="utf8")
     
     # Generate some parameters. These can be reused.
     def generate_parameter(self, generate_cipher_parameter True):
