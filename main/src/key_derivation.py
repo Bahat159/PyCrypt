@@ -35,7 +35,7 @@ class Key_derivation:
     
     def derive_key(self, salt):
         kdf = PBKDF2HMAC(algorithm=self.encode_type,length=self.key_length,salt=salt,iterations=self.iteration)
-        if kdf:
+        if kdf: 
             key = kdf.derive(self.key_password)
         return key
     
@@ -44,3 +44,37 @@ class Key_derivation:
         if kdf:
             verified_key = kdf.verify(self.key_password, key)
         return verified_key
+
+
+# Scrypt is a KDF designed for password storage by Colin Percival 
+# to be resistant against hardware-assisted attackers 
+# by having a tunable memory cost. It is described in RFC 7914.
+#
+# This class conforms to the KeyDerivationFunction interface.
+
+class Scrypt:
+    def __init__(self):
+        self.salt_length  = int('128')
+        self.key_length   = int('32')
+        self.cpu_cost_parameter  = int('2**14')
+        self.block_size          = int('8')
+        self.parallel_parameter  = int('1')
+        self.my_password         = bytes('my great password', encoding="utf8")
+    
+    def generate_random_salt(self, use_random_salt = True):
+        if use_random_salt:
+            salt = os.urandom(self.salt_length)
+        return salt
+    
+    def generate_kdf(self, use_derive_key = True):
+        if use_derive_key:
+            kdf = Scrypt(salt=salt,length=self.key_length,n=self.cpu_cost_parameter,r=self.block_size,p=self.parallel_parameter)
+        return kdf
+    
+    def generte_key(self, kdf):
+        if kdf:
+            key = kdf.derive(self.my_password)
+        return key
+    
+    def verify_key(self, kdf, key):
+        return kdf.verify(self.my_password, key)
