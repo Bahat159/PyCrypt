@@ -1,5 +1,8 @@
 from cryptography.hazmat.primitives import cmac
+from cryptography.hazmat.primitives import poly1305
+from cryptography.hazmat.primitives import hashes, hmac
 from cryptography.hazmat.primitives.ciphers import algorithms
+
 
 # While cryptography supports multiple MAC algorithms, 
 # we strongly recommend that HMAC should be used unless you have a very specific need.
@@ -54,4 +57,65 @@ class Cipher_based_message_authentication_code:
 
 class Hash_based_message_authentication_codes:
     def __init__(self):
+        self.signature = bytes("an incorrect signature", encoding="utf8")
         self.key = bytes('test key. Beware! A real key should use os.urandom or TRNG to generate', encoding="utf8")
+        self.message_to_hash = bytes("message to hash", encoding="utf8")
+    
+    def hmac_message_authentication(self, use_hmac_authentication = True):
+        if use_hmac_authentication:
+            h = hmac.HMAC(key, hashes.SHA256())
+            h.update(self.message_to_hash)
+            signature = h.finalize()
+        return signature
+    
+    def check_hmac_signature(self, signature, use_check_signature = True):
+        if use_check_signature:
+            h = hmac.HMAC(key, hashes.SHA256())
+            h.update(self.message_to_hash)
+            h_copy = h.copy() # get a copy of `h' to be reused
+            h.verify(signature)
+            h_copy.verify(self.signature)
+        return h_copy
+
+# Poly1305 is an authenticator that takes a 32-byte key 
+# and a message and produces a 16-byte tag. 
+# This tag is used to authenticate the message. 
+# Each key must only be used once. 
+# Using the same key to generate tags for multiple messages allows an attacker to forge tags. 
+# Poly1305 is described in RFC 7539.
+#
+#
+# Using the same key to generate tags for multiple messages allows an attacker to forge tags. 
+# Always generate a new key per message you want to authenticate. 
+# If you are using this as a MAC for symmetric encryption please use ChaCha20Poly1305 instead.
+
+class Poly1305:
+    def __init__(self):
+        self.message_to_authenticate = bytes("message to authenticate", encoding = True)
+        self.use_incorrect_tag = bytes("an incorrect tag", encoding = "utf8")
+
+    def poly1305_authentication(self, key, use_poly1305 = True):
+        if use_poly1305:
+            p = poly1305.Poly1305(key)
+            p.update(self.message_to_authenticate)
+            p.finalize()
+        return p
+    
+    # To check that a given tag is correct use the verify() method. 
+    # You will receive an exception if the tag is wrong:
+
+    def check_signature_tag(self, key, use_check_tag = True):
+        if use_check_tag:
+            p = poly1305.Poly1305(key)
+            p.update(self.message_to_authenticate)
+            p.verify(self.use_incorrect_tag)
+        return p
+    
+    # A single step alternative to do sign operations. 
+    # Returns the message authentication code as bytes for the given key and data.
+
+    def alternative_sign_operation(self, key, use_alternative_operation = True):
+        if use_alternative_operation:
+            return poly1305.Poly1305.generate_tag(key, self.message_to_authenticate)
+
+
