@@ -1,6 +1,7 @@
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import dh
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.backends import default_backend
 
 
 # For security and performance reasons we suggest using ECDH instead of DH where possible.
@@ -54,7 +55,7 @@ class Diffie_Hellman_key_exchange:
 
     def perform_key_derivation(self, shared_key, use_shared_key = True):
         if use_shared_key:
-            derived_key = HKDF(algorithm=self.algorithm_type,length=self.key_length,salt=None,info=self.handshake_data,).derive(shared_key)
+            derived_key = HKDF(algorithm=self.algorithm_type,length=self.key_length,salt=None,info=self.handshake_data,backend=default_backend()).derive(shared_key)
         return derived_key
     
     # And now we can demonstrate that the handshake performed in the
@@ -66,7 +67,7 @@ class Diffie_Hellman_key_exchange:
         return same_shared_key
     
     def perform_handshake_with_encrypt_algorithm(self, same_shared_key):
-        same_derived_key = HKDF(algorithm=self.algorithm_type,length=self.key_length,salt=None,info=self.handshake_data,).derive(same_shared_key)
+        same_derived_key = HKDF(algorithm=self.algorithm_type,length=self.key_length,salt=None,info=self.handshake_data,backend=default_backend()).derive(same_shared_key)
         return same_derived_key
 
     def verfiy_data_exchange(self, derived_key, same_derived_key):
@@ -117,7 +118,7 @@ class Diffie_Hellman_key_exchange_Ephemeral_Form:
     
     def perform_key_derivation(self, shared_key, use_key_derviation = True):
         if use_key_derviation:
-            derived_key = HKDF(algorithm=self.algorithm_type,length=self.key_length,salt=None,info=self.handshake_data,).derive(shared_key)
+            derived_key = HKDF(algorithm=self.algorithm_type,length=self.key_length,salt=None,info=self.handshake_data,backend=default_backend()).derive(shared_key)
         return shared_key
     
     # For the next handshake we MUST generate another private key, but
@@ -125,6 +126,6 @@ class Diffie_Hellman_key_exchange_Ephemeral_Form:
 
     def generate_derived_key_2(self, shared_key_2):
         if shared_key_2:
-            derived_key_2 = HKDF(algorithm=self.algorithm_type,length=self.key_length,salt=None,info=self.handshake_data,).derive(shared_key_2)
+            derived_key_2 = HKDF(algorithm=self.algorithm_type,length=self.key_length,salt=None,info=self.handshake_data,backend=default_backend()).derive(shared_key_2)
         return shared_key_2
     
