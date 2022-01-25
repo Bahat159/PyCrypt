@@ -31,6 +31,10 @@ class RSA_Key_Algorithm:
         self.key_serialization_format_no_password        = serialization.PrivateFormat.TraditionalOpenSSL
         self.serialze_with_password_encryption_algorithm = serialization.BestAvailableEncryption(self.key_serialize_password)
     
+
+    def __repr__(self):
+        return self
+    
     def generate_rsa_private_key(self, generate_new_key = True):
         if generate_new_key:
             private_key = rsa.generate_private_key(public_exponent=self.public_exponent,key_size=self.key_size,)
