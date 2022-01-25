@@ -1,6 +1,7 @@
 import os
 import sys
 from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives.asymmetric import utils
@@ -107,7 +108,7 @@ class Elliptic_Curve_Key_Exchange_algorithm():
 
     def perform_key_derivation(self, shared_key):
         if shared_key:
-            derived_key = HKDF(algorithm=self.hash_algorithm,length=self.key_length,salt=None,info=self.data_to_encode,).derive(shared_key)
+            derived_key = HKDF(algorithm=self.hash_algorithm,length=self.key_length,salt=None,info=self.data_to_encode,backend=default_backend()).derive(shared_key)
         return derived_key
     
     # And now we can demonstrate that the handshake performed in the
@@ -123,7 +124,7 @@ class Elliptic_Curve_Key_Exchange_algorithm():
 
     def perform_key_derivation_with_same_dervied_key(self, same_shared_key):
         if same_shared_key:
-            same_derived_key = HKDF(algorithm=self.hash_algorithm,length=self.key_length,salt=None,info=self.data_to_encode,).derive(same_shared_key)
+            same_derived_key = HKDF(algorithm=self.hash_algorithm,length=self.key_length,salt=None,info=self.data_to_encode,backend=default_backend()).derive(same_shared_key)
         return same_derived_key
 
     def check_key_derivation(self, derived_key, same_derived_key):
@@ -169,7 +170,7 @@ class ECDHE_key_Exchange_Ephemeral_Form:
     # Perform key derivation.
     def perform_key_derivation(self, shared_key):
         if shared_key:
-            derived_key = HKDF(algorithm=self.key_alogrithm,length=self.key_length,salt=None,info=self.handshake_data,).derive(shared_key)
+            derived_key = HKDF(algorithm=self.key_alogrithm,length=self.key_length,salt=None,info=self.handshake_data,backend=default_backend()).derive(shared_key)
         return derived_key
     
     # For the next handshake we MUST generate another private key.
@@ -189,5 +190,5 @@ class ECDHE_key_Exchange_Ephemeral_Form:
     
     def generate_handshake_derived_key(self, shared_key_2):
         if shared_key_2:
-            derived_key_2 = HKDF(algorithm=self.key_alogrithm,length=self.key_length,salt=None,info=self.handshake_data,).derive(shared_key_2)
+            derived_key_2 = HKDF(algorithm=self.key_alogrithm,length=self.key_length,salt=None,info=self.handshake_data,backend=default_backend()).derive(shared_key_2)
         return shared_key_2
