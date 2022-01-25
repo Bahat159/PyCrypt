@@ -274,3 +274,28 @@ class KBKDF:
 class KBKDFCMAC:
     def __init__(self):
         self.salt_length = int('32')
+        self.encoding_type = algorithms.AES
+        self.key_material = bytes("32 bytes long input key material", encoding="utf8")
+        self.label = bytes("KBKDF CMAC Label",encoding="utf8")
+        self.context = bytes("KBKDF CMAC Context", enconding="utf8")
+        self.length_of_binary_representation = int('4')
+        self.binary_representation_length = int('4')
+    
+    def generate_kbkdfcmac(self, use_kbkdfcmac = True):
+        if use_kbkdfcmac:
+            kdf = KBKDFCMAC(algorithm=self.encoding_type,mode=Mode.CounterMode,length=self.salt_length,rlen=self.length_of_binary_representation,llen=self.binary_representation_length,location=CounterLocation.BeforeFixed,label=self.label,context=self.context,fixed=None)
+        return kdf
+    
+    def derive_key(self, kdf, use_derive_key = True):
+        if use_derive_key:
+            key = kdf.derive(self.key_material)
+        return key
+    
+    def second_kdkdfmac(self, use_second_kdkdfmac = True):
+        if use_second_kdkdfmac:
+            kdf = KBKDFCMAC(algorithm=self.encoding_type,mode=Mode.CounterMode,length=self.salt_length,rlen=self.length_of_binary_representation,llen=self.binary_representation_length,location=CounterLocation.BeforeFixed,label=self.label,context=self.context,fixed=None)
+        return kdf
+    
+    def verify_key(self, kdf, key, use_verify_key = True):
+        if use_verify_key:
+            return kdf.verify(self.key_material, key)
