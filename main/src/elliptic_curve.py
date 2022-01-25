@@ -30,6 +30,9 @@ class Elliptic_Curve_Signature_Algorithms():
         self.data               = bytes('this is some data I\'d like to sign', encoding="utf8")
         self.hash               = hashes.SHA256()
     
+    def __repr__(self):
+        return self
+    
     def generate_private_key(self):
         if self.gen_private_key:
             private_key = ec.generate_private_key(ec.SECP384R1())
@@ -78,6 +81,9 @@ class Elliptic_Curve_Key_Exchange_algorithm():
         self.hash_algorithm     = hashes.SHA256()
         self.key_length         = 32   # can be of any length (e.g, 1024, 2048, 256 and so on)
         self.data_to_encode     = bytes('handshake data', encoding="utf8")
+    
+    def __repr__(self):
+        return self
     
     def generate_server_private_key(self, generate_server_private_key = True):
         if generate_server_private_key:
@@ -138,6 +144,9 @@ class ECDHE_key_Exchange_Ephemeral_Form:
         self.key_alogrithm  = hashes.SHA256()
         self.key_length     = 32
         self.handshake_data = bytes('Handshake Data', encoding="utf8")
+    
+    def __repr__(self):
+        return self
     
     # Generate a private key for use in the exchange.
     def generate_private_key(self):
