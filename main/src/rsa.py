@@ -1,4 +1,5 @@
 from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -37,7 +38,7 @@ class RSA_Key_Algorithm:
     
     def generate_rsa_private_key(self, generate_new_key = True):
         if generate_new_key:
-            private_key = rsa.generate_private_key(public_exponent=self.public_exponent,key_size=self.key_size,)
+            private_key = rsa.generate_private_key(public_exponent=self.public_exponent,key_size=self.key_size,backend=default_backend())
         return private_key
     
     # Key Loading
@@ -48,7 +49,7 @@ class RSA_Key_Algorithm:
 
     def load_private_key_from_disk_PEM_FORMAT(self, file_path_to_key_dot_pem, file_passsword = None):
         with open(file_path_to_key_dot_pem, "rb") as key_file:
-            private_key = serialization.load_pem_private_key(key_file.read(),password=file_passsword,)
+            private_key = serialization.load_pem_private_key(key_file.read(),password=file_passsword,backend=default_backend())
         return private_key
     
     # Key serializatio
