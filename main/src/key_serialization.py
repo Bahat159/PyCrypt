@@ -9,6 +9,9 @@ class Key_Serialization:
         self.password = None
         self.rsa_serialization_type = rsa.RSAPrivateKey
         self.dsa_serialization_type = dsa.DSAPrivateKey
+    
+    def __repr__(self):
+        return self
 
     def load_and_serialize_pem_private_key(self, pem_data, message):
         key = load_pem_private_key(pem_data, password=self.password)
@@ -21,3 +24,4 @@ class Key_Serialization:
         else:
             raise TypeError
         return signature
+    
