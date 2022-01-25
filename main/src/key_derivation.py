@@ -1,7 +1,8 @@
 import os
 from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.primitives.kdf.hkdf import HKDFExpand
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.kdf.concatkdf import ConcatKDFHMAC
 from cryptography.hazmat.primitives.kdf.concatkdf import ConcatKDFHash
@@ -161,7 +162,7 @@ class ConcatKDFHMAC:
 class HKDF:
     def __init__(self):
         self.salt = os.urandom(int('16'))
-        self.salt_length = int('32')
+        self.salt_length = int('32')  # 255 * (algorithm.digest_size // 8)
         self.encoding_type = hashes.SHA256()
         self.info = bytes("hkdf-example", encoding = "utf8")
         self.input_key = bytes("input key",encoding="utf8")
@@ -184,4 +185,18 @@ class HKDF:
     def verify_salting(self, hkdf, key, use_verify_salt = True):
         if use_verify_salt:
             return hkdf.verify(self.input_key, key)
+    
+
+# HKDF consists of two stages, extract and expand. 
+# This class exposes an expand only version of HKDF that is 
+# suitable when the key material is already cryptographically strong.
+#
+# Warning
+#
+# HKDFExpand should only be used if the key material is cryptographically strong. 
+# You should use HKDF if you are unsure.  
+
+class HKDFExpand:
+    def __init__(self):
+        return
     
