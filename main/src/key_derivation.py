@@ -45,13 +45,13 @@ class Key_derivation:
         return salt
     
     def derive_key(self, salt):
-        kdf = PBKDF2HMAC(algorithm=self.encode_type,length=self.key_length,salt=salt,iterations=self.iteration)
+        kdf = PBKDF2HMAC(algorithm=self.encode_type,length=self.key_length,salt=salt,iterations=self.iteration, backend=default_backend())
         if kdf: 
             key = kdf.derive(self.key_password)
         return key
     
     def verfiy_derived_key(self, salt, key):
-        kdf = PBKDF2HMAC(algorithm=self.encode_type,length=self.key_length,salt=salt,iterations=self.iteration)
+        kdf = PBKDF2HMAC(algorithm=self.encode_type,length=self.key_length,salt=salt,iterations=self.iteration, backend=default_backend())
         if kdf:
             verified_key = kdf.verify(self.key_password, key)
         return verified_key
@@ -83,13 +83,18 @@ class Scrypt:
     
     def generate_kdf(self, use_derive_key = True):
         if use_derive_key:
-            kdf = Scrypt(salt=salt,length=self.key_length,n=self.cpu_cost_parameter,r=self.block_size,p=self.parallel_parameter)
+            kdf = Scrypt(salt=salt,length=self.key_length,n=self.cpu_cost_parameter,r=self.block_size,p=self.parallel_parameter, backend=default_backend())
         return kdf
     
-    def generte_key(self, kdf):
+    def derive_key(self, kdf):
         if kdf:
             key = kdf.derive(self.my_password)
         return key
+    
+    def verify_kdf(self, use_verify_kdf = True):
+        if use_verify_kdf:
+            kdf = Scrypt(salt=salt,length=self.key_length,n=self.cpu_cost_parameter,r=self.block_size,p=self.parallel_parameter, backend=default_backend())
+        return kdf
     
     def verify_key(self, kdf, key):
         return kdf.verify(self.my_password, key)
@@ -115,7 +120,7 @@ class Fixed_cost_algorithms:
     
     def ckdf(self, use_ckdf = True):
         if use_ckdf:
-            ckdf = ConcatKDFHash(algorithm=self.encoding_type,length=self.key_length,otherinfo= self.other_info)
+            ckdf = ConcatKDFHash(algorithm=self.encoding_type,length=self.key_length,otherinfo= self.other_info, backend=default_backend())
         return ckdf
     
     def derive_key(self, ckdf, use_derive_key = True):
@@ -125,7 +130,7 @@ class Fixed_cost_algorithms:
     
     def second_ckdf(self, use_second_ckdf = True):
         if use_second_ckdf:
-            ckdf = ConcatKDFHash(algorithm=self.encoding_type,length=self.key_length,otherinfo=self.other_info)
+            ckdf = ConcatKDFHash(algorithm=self.encoding_type,length=self.key_length,otherinfo=self.other_info, backend=default_backend())
         return ckdf
     
     def verify_ckdf_key_data(self, ckdf, key, use_verify_ckdf_key = True):
@@ -153,7 +158,7 @@ class ConcatKDFHMAC:
     
     def generate_cdkf(self, use_cdkf = True):
         if use_cdkf:
-            ckdf = ConcatKDFHMAC(algorithm=self.encoding_type,length=self.salt_length,salt=salt,otherinfo=self.otherinfo)
+            ckdf = ConcatKDFHMAC(algorithm=self.encoding_type,length=self.salt_length,salt=salt,otherinfo=self.otherinfo, backend=default_backend())
         return cdkf
     
 
@@ -164,7 +169,7 @@ class ConcatKDFHMAC:
     
     def second_ckdf(self, use_second_ckdf = True):
         if use_second_ckdf:
-            ckdf = ConcatKDFHMAC(algorithm=self.encoding_type,length=self.salt_length,salt=salt,otherinfo=self.otherinfo)
+            ckdf = ConcatKDFHMAC(algorithm=self.encoding_type,length=self.salt_length,salt=salt,otherinfo=self.otherinfo, backend=default_backend())
         return ckdf
     
     def verfiy_key(self, key, use_verify_key = True):
@@ -191,7 +196,7 @@ class HKDF:
     
     def generate_hkdf(self, use_hkdf = True):
         if use_hkdf:
-            hkdf = HKDF(algorithm=self.encoding_type,length=self.salt_length,salt=self.salt,info=self.info)
+            hkdf = HKDF(algorithm=self.encoding_type,length=self.salt_length,salt=self.salt,info=self.info, backend=default_backend())
         return hkdf
     
     def generate_key(self, hkdf, use_generate_key = True):
@@ -201,7 +206,7 @@ class HKDF:
     
     def second_hkdf(self, use_second_hkdf = True):
         if use_second_hkdf:
-            hkdf = HKDF(algorithm=self.encoding_type,length=self.salt_length,salt=self.salt,info=self.info)
+            hkdf = HKDF(algorithm=self.encoding_type,length=self.salt_length,salt=self.salt,info=self.info, backend=default_backend())
         return hkdf
     
     def verify_salting(self, hkdf, key, use_verify_salt = True):
@@ -231,7 +236,7 @@ class HKDFExpand:
     
     def generate_hkdf_expand(self, use_hkdf_expand = True):
         if use_hkdf_expand:
-            hkdf_expand = HKDFExpand(algorithm=self.encoding_type,length=self.salt_length,info=self.info)
+            hkdf_expand = HKDFExpand(algorithm=self.encoding_type,length=self.salt_length,info=self.info, backend=default_backend())
         return hkdf_expand
     
     def generate_derive_key(self, use_derive_key = True):
@@ -241,7 +246,7 @@ class HKDFExpand:
     
     def second_hkdf_expand(self, use_second_hkdf = True):
         if use_second_hkdf:
-            second_hkdf = HKDFExpand(algorithm=self.encoding_type,length=self.salt_length,info=self.info)
+            second_hkdf = HKDFExpand(algorithm=self.encoding_type,length=self.salt_length,info=self.info, backend=default_backend())
         return second_hkdf
     
     def verify_hkdf_expand(self, hkdf, key, use_verify_hkdf_expand = True):
@@ -272,7 +277,7 @@ class KBKDF:
     
     def generate_kbkdf(self, use_kbkdf = True):
         if use_kbkdf:
-            kdf = KBKDFHMAC(algorithm=self.encoding_type,mode=Mode.CounterMode,length=self.salt_length,rlen=self.length_of_binary_representation,llen=self.binary_representation_length,location=CounterLocation.BeforeFixed,label=self.label,context=self.context,fixed=None)
+            kdf = KBKDFHMAC(algorithm=self.encoding_type,mode=Mode.CounterMode,length=self.salt_length,rlen=self.length_of_binary_representation,llen=self.binary_representation_length,location=CounterLocation.BeforeFixed,label=self.label,context=self.context,fixed=None, backend=default_backend())
         return kdf
     
     def generate_key(self, kdf, use_generate_key = True):
@@ -282,7 +287,7 @@ class KBKDF:
     
     def second_kbkdf(self, use_second_kdkdf = True):
         if use_second_kdkdf:
-            second_kdf = KBKDFHMAC(algorithm=hashes.SHA256(),mode=Mode.CounterMode,length=self.salt_length,rlen=self.length_of_binary_representation,llen=self.binary_representation_length,location=CounterLocation.BeforeFixed,label=self.label,context=self.context,fixed=None,)
+            second_kdf = KBKDFHMAC(algorithm=hashes.SHA256(),mode=Mode.CounterMode,length=self.salt_length,rlen=self.length_of_binary_representation,llen=self.binary_representation_length,location=CounterLocation.BeforeFixed,label=self.label,context=self.context,fixed=None,backend=default_backend())
         return second_kdf
     
     def verify_key(self, kdf, key, use_verify_key = True):
@@ -315,7 +320,7 @@ class KBKDFCMAC:
     
     def generate_kbkdfcmac(self, use_kbkdfcmac = True):
         if use_kbkdfcmac:
-            kdf = KBKDFCMAC(algorithm=self.encoding_type,mode=Mode.CounterMode,length=self.salt_length,rlen=self.length_of_binary_representation,llen=self.binary_representation_length,location=CounterLocation.BeforeFixed,label=self.label,context=self.context,fixed=None)
+            kdf = KBKDFCMAC(algorithm=self.encoding_type,mode=Mode.CounterMode,length=self.salt_length,rlen=self.length_of_binary_representation,llen=self.binary_representation_length,location=CounterLocation.BeforeFixed,label=self.label,context=self.context,fixed=None, backend=default_backend())
         return kdf
     
     def derive_key(self, kdf, use_derive_key = True):
@@ -325,7 +330,7 @@ class KBKDFCMAC:
     
     def second_kdkdfmac(self, use_second_kdkdfmac = True):
         if use_second_kdkdfmac:
-            kdf = KBKDFCMAC(algorithm=self.encoding_type,mode=Mode.CounterMode,length=self.salt_length,rlen=self.length_of_binary_representation,llen=self.binary_representation_length,location=CounterLocation.BeforeFixed,label=self.label,context=self.context,fixed=None)
+            kdf = KBKDFCMAC(algorithm=self.encoding_type,mode=Mode.CounterMode,length=self.salt_length,rlen=self.length_of_binary_representation,llen=self.binary_representation_length,location=CounterLocation.BeforeFixed,label=self.label,context=self.context,fixed=None, backend=default_backend())
         return kdf
     
     def verify_key(self, kdf, key, use_verify_key = True):
@@ -355,7 +360,7 @@ class X963KDF:
     
     def generate_xkdf(self, use_xkdf = True):
         if use_xkdf:
-            xkdf = X963KDF(algorithm=self.encoding_type,length=self.key_length,sharedinfo=self.sharedinfo)
+            xkdf = X963KDF(algorithm=self.encoding_type,length=self.key_length,sharedinfo=self.sharedinfo, backend=default_backend())
         return xkdf
     
     def derive_key(self, xkdf, use_derive_key = True):
@@ -365,7 +370,7 @@ class X963KDF:
     
     def second_xkdf(self, use_second_xkdf = True):
         if use_second_xkdf:
-            xkdf = X963KDF(algorithm=self.encoding_type,length=self.key_length,sharedinfo=self.sharedinfo)
+            xkdf = X963KDF(algorithm=self.encoding_type,length=self.key_length,sharedinfo=self.sharedinfo, backend=default_backend())
         return xkdf
     
     def verify_key(self, key, use_verify_key = True):
