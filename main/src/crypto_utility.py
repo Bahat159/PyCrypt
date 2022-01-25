@@ -75,6 +75,9 @@ class Asymmetric_Utilities:
         self.encoding_type   = hashlib.sha256()
         self.salt_length     = padding.PSS.MAX_LENGTH
     
+    def __repr__(self):
+        return self
+    
     def generate_private_key(self, use_assymetric_private_key = True):
         if use_assymetric_private_key:
             private_key = rsa.generate_private_key(public_exponent=self.public_exponent,key_size=self.key_size,)
