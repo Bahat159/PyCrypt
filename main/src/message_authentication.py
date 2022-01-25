@@ -25,6 +25,10 @@ class Cipher_based_message_authentication_code:
         self.message_to_authenticate = bytes("message to authenticate", encoding="utf8")
         self.incorrect_signature_message = bytes("an incorrect signature", encoding="utf8")
     
+
+    def __repr__(self):
+        return self
+    
     def cmac_authentication(self, key, use_cmac_authenctication = True):
         if use_cmac_authenctication:
             c = cmac.CMAC(algorithms.AES(key))
@@ -61,6 +65,10 @@ class Hash_based_message_authentication_codes:
         self.key = bytes('test key. Beware! A real key should use os.urandom or TRNG to generate', encoding="utf8")
         self.message_to_hash = bytes("message to hash", encoding="utf8")
     
+
+    def __repr__(self):
+        return self
+    
     def hmac_message_authentication(self, use_hmac_authentication = True):
         if use_hmac_authentication:
             h = hmac.HMAC(key, hashes.SHA256())
@@ -93,6 +101,10 @@ class Poly1305:
     def __init__(self):
         self.message_to_authenticate = bytes("message to authenticate", encoding = True)
         self.use_incorrect_tag = bytes("an incorrect tag", encoding = "utf8")
+    
+
+    def __repr__(self):
+        return self
 
     def poly1305_authentication(self, key, use_poly1305 = True):
         if use_poly1305:
@@ -140,6 +152,10 @@ class Message_digests:
     def __init__(self):
         self.message = bytes("abc", encoding="utf8")
         self.update_message = bytes("123", encoding="utf8")
+    
+
+    def __repr__(self):
+        return self
 
     # Keep in mind that attacks against cryptographic hashes only get stronger with time, 
     # and that often algorithms that were once thought to be strong,
