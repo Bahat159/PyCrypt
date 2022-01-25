@@ -34,7 +34,10 @@ class Key_derivation:
         self.key_length   = int('32')
         self.iteration    = int('100000')
         self.key_password = bytes('my great password', encoding="utf8")
+    
 
+    def __repr__(self):
+        return self
     
     # Salts should be randomly generated
     def genreate_random_salts(self):
@@ -69,6 +72,10 @@ class Scrypt:
         self.parallel_parameter  = int('1')
         self.my_password         = bytes('my great password', encoding="utf8")
     
+
+    def __repr__(self):
+        return self
+    
     def generate_random_salt(self, use_random_salt = True):
         if use_random_salt:
             salt = os.urandom(self.salt_length)
@@ -100,6 +107,10 @@ class Fixed_cost_algorithms:
         self.input_key     = bytes("input key", encoding="utf8")
         self.other_info    = bytes("concatkdf-example", encoding="utf8")
         self.encoding_type = hashes.SHA256()
+    
+
+    def __repr__(self):
+        return self
 
     
     def ckdf(self, use_ckdf = True):
@@ -136,6 +147,10 @@ class ConcatKDFHMAC:
         self.input_key     = bytes("input key", encoding="utf8")
         self.otherinfo     = bytes("concatkdf-example", encoding="utf8")
     
+
+    def __repr__(self):
+        return self
+    
     def generate_cdkf(self, use_cdkf = True):
         if use_cdkf:
             ckdf = ConcatKDFHMAC(algorithm=self.encoding_type,length=self.salt_length,salt=salt,otherinfo=self.otherinfo)
@@ -169,6 +184,10 @@ class HKDF:
         self.encoding_type = hashes.SHA256()
         self.info = bytes("hkdf-example", encoding = "utf8")
         self.input_key = bytes("input key",encoding="utf8")
+    
+
+    def __repr__(self):
+        return self
     
     def generate_hkdf(self, use_hkdf = True):
         if use_hkdf:
@@ -206,6 +225,10 @@ class HKDFExpand:
         self.key_material = os.urandom(int('16'))
         self.encoding_type = hashes.SHA256()
     
+
+    def __repr__(self):
+        return self
+    
     def generate_hkdf_expand(self, use_hkdf_expand = True):
         if use_hkdf_expand:
             hkdf_expand = HKDFExpand(algorithm=self.encoding_type,length=self.salt_length,info=self.info)
@@ -242,6 +265,10 @@ class KBKDF:
         self.input_key = bytes("input key", encoding="utf8")
         self.length_of_binary_representation = int('4')
         self.binary_representation_length = int('4')
+    
+
+    def __repr__(self):
+        return self
     
     def generate_kbkdf(self, use_kbkdf = True):
         if use_kbkdf:
@@ -282,6 +309,10 @@ class KBKDFCMAC:
         self.length_of_binary_representation = int('4')
         self.binary_representation_length = int('4')
     
+
+    def __repr__(self):
+        return self
+    
     def generate_kbkdfcmac(self, use_kbkdfcmac = True):
         if use_kbkdfcmac:
             kdf = KBKDFCMAC(algorithm=self.encoding_type,mode=Mode.CounterMode,length=self.salt_length,rlen=self.length_of_binary_representation,llen=self.binary_representation_length,location=CounterLocation.BeforeFixed,label=self.label,context=self.context,fixed=None)
@@ -318,6 +349,9 @@ class X963KDF:
         self.encoding_type = hashes.SHA256()
         self.input_key = bytes("input key", encoding = "utf8")
         self.sharedinfo = bytes("ANSI X9.63 Example", encoding="utf8")
+    
+    def __repr__(self):
+        return self
     
     def generate_xkdf(self, use_xkdf = True):
         if use_xkdf:
