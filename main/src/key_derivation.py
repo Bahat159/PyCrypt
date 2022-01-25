@@ -160,5 +160,28 @@ class ConcatKDFHMAC:
 
 class HKDF:
     def __init__(self):
-        return
+        self.salt = os.urandom(int('16'))
+        self.salt_length = int('32')
+        self.encoding_type = hashes.SHA256()
+        self.info = bytes("hkdf-example", encoding = "utf8")
+        self.input_key = bytes("input key",encoding="utf8")
+    
+    def generate_hkdf(self, use_hkdf = True):
+        if use_hkdf:
+            hkdf = HKDF(algorithm=self.encoding_type,length=self.salt_length,salt=self.salt,info=self.info)
+        return hkdf
+    
+    def generate_key(self, hkdf, use_generate_key = True):
+        if use_generate_key:
+            key = hkdf.derive(self.input_key)
+        return key
+    
+    def second_hkdf(self, use_second_hkdf = True):
+        if use_second_hkdf:
+            hkdf = HKDF(algorithm=self.encoding_type,length=self.salt_length,salt=self.salt,info=self.info)
+        return hkdf
+    
+    def verify_salting(self, hkdf, key, use_verify_salt = True):
+        if use_verify_salt:
+            return hkdf.verify(self.input_key, key)
     
