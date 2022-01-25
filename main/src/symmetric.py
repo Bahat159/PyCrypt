@@ -25,7 +25,11 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 #decrypt = class_object.do_decryption(encrypt)
 #
 #print(encrypt)
+# b'\x19\x0c\x93\x1c\xffx\x8d*zv\xe7\x97\x12\xb3\xed\xad'
+#
 #print(repr(decrypt))
+# b'a secret message'
+
 
 class symmertic:
     # Cipher objects combine an algorithm such as AES with a mode like CBC or CTR. 
