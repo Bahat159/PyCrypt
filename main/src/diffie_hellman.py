@@ -20,6 +20,9 @@ class Diffie_Hellman_key_exchange:
         self.algorithm_type = hashes.SHA256()
         self.handshake_data = bytes('handshake data', encoding="utf8")
     
+    def __repr__(self):
+        return self
+    
     # Generate some parameters. These can be reused.
     def generate_parameter(self, generate_cipher_parameter True):
         if generate_cipher_parameter:
@@ -80,8 +83,10 @@ class Diffie_Hellman_key_exchange_Ephemeral_Form:
         self.algorithm_type = hashes.SHA256()
         self.handshake_data = bytes('handshake data')
     
+    def __repr__(self):
+        return self
+    
     # Generate some parameters. These can be reused.
-
     def generate_parameters(self, use_parameters = True):
         if use_parameters:
             parameters = dh.generate_parameters(generator=self.generator, key_size=self.key_size)
