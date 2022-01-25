@@ -6,6 +6,7 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDFExpand
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.kdf.concatkdf import ConcatKDFHMAC
 from cryptography.hazmat.primitives.kdf.concatkdf import ConcatKDFHash
+from cryptography.hazmat.primitives.kdf.kbkdf import (CounterLocation, KBKDFHMAC, Mode)
 
 
 # PBKDF2 (Password Based Key Derivation Function 2) is typically used 
@@ -198,7 +199,7 @@ class HKDF:
 
 class HKDFExpand:
     def __init__(self):
-        self.salt_length = int('32')
+        self.salt_length = int('32')  # 255 * (algorithm.digest_size // 8).
         self.info = bytes("hkdf-example", enconding="utf8")
         self.key_material = os.urandom(int('16'))
         self.encoding_type = hashes.SHA256()
@@ -221,3 +222,31 @@ class HKDFExpand:
     def verify_hkdf_expand(self, hkdf, key, use_verify_hkdf_expand = True):
         if use_verify_hkdf_expand:
             return hkdf.verify(self.key_material, key)
+
+
+# KBKDF (Key Based Key Derivation Function) is defined by the NIST SP 800-108 document, 
+# to be used to derive additional keys from a key that 
+# has been established through an automated key-establishment scheme.
+#
+# Warning
+# KBKDFHMAC should not be used for password storage.
+
+class KBKDF:
+    def __init__(self):
+        self.label = bytes("KBKDF HMAC Label", encoding = "utf8")
+        self.context = bytes("KBKDF HMAC Context",encoding="utf8")
+        self.encoding_type = hashes.SHA256()
+        self.salt_length = int('32')
+        self.input_key = bytes("input key", encoding="utf8")
+        self.length_of_binary_representation = int('4')
+        self.binary_representation_length = int('4')
+    
+    def generate_kbkdf(self, use_kbkdf = True):
+        if use_kbkdf:
+            kdf = KBKDFHMAC(algorithm=self.encoding_type,mode=Mode.CounterMode,length=self.salt_length,rlen=self.length_of_binary_representation,llen=self.binary_representation_length,location=CounterLocation.BeforeFixed,label=self.label,context=self.context,fixed=None)
+        return kdf
+    
+    def generate_key(self, kdf, use_generate_key = True):
+        if use_generate_key:
+            key = kdf.derive(self.input_key)
+        return key
