@@ -125,3 +125,83 @@ class Poly1305:
         if use_verify_tag:
             return poly1305.Poly1305.verify_tag(key, self.message_to_authenticate self.use_incorrect_tag)
 
+
+# Message digests (Hashing)
+#
+# A cryptographic hash function takes an arbitrary 
+# block of data and calculates a fixed-size bit string (a digest), 
+# such that different data results (with a high probability) in different digests.
+#
+# This is an implementation of HashContext meant to be 
+# used with HashAlgorithm implementations to provide an 
+# incremental interface to calculating various message digests.
+
+class Message_digests:
+    def __init__(self):
+        self.message = bytes("abc", encoding="utf8")
+        self.update_message = bytes("123", encoding="utf8")
+
+    # Keep in mind that attacks against cryptographic hashes only get stronger with time, 
+    # and that often algorithms that were once thought to be strong,
+    # become broken. Because of this it’s important to 
+    # include a plan for upgrading the hash algorithm you use over time. 
+    # For more information, 
+    # see Lifetimes of cryptographic hash functions.[https://valerieaurora.org/hash.html]
+
+    def calculate_message_digest(self, use_message_digest = True):
+        if use_message_digest:
+            digest = hashes.Hash(hashes.SHA256())
+            digest.update(self.message)
+            digest.update(self.update_message)
+            digest.finalize()
+        return digest
+
+# SHA-2 family
+#
+# SHA-224 is a cryptographic hash function from the SHA-2 family 
+# and is standardized by NIST. 
+# It produces a 224-bit message digest.
+
+# BLAKE2
+#
+# BLAKE2 is a cryptographic hash function specified in RFC 7693. 
+# BLAKE2’s design makes it immune to length-extension attacks, 
+# an advantage over the SHA-family of hashes.
+
+# SHA-3 family
+#
+# SHA-3 is the most recent NIST secure hash algorithm standard. 
+# Despite the larger number SHA-3 is not considered to be better than SHA-2. 
+# Instead, it uses a significantly different internal structure 
+# so that if an attack appears against SHA-2 
+# it is unlikely to apply to SHA-3. SHA-3 is significantly slower 
+# than SHA-2 so at this time most users should choose SHA-2.
+
+# SHA-1
+#
+# Warning
+# SHA-1 is a deprecated hash algorithm that has practical known collision attacks. 
+# You are strongly discouraged from using it. Existing applications should strongly consider moving away.
+#
+# SHA-1 is a cryptographic hash function standardized by NIST. 
+# It produces an 160-bit message digest. 
+# Cryptanalysis of SHA-1 has demonstrated that it is vulnerable to practical collision attacks, 
+# and collisions have been demonstrated.
+
+# MD5
+#
+# Warning
+# MD5 is a deprecated hash algorithm that has practical known collision attacks. 
+# You are strongly discouraged from using it. Existing applications should strongly consider moving away.
+#
+# MD5 is a deprecated cryptographic hash function. 
+# It produces a 128-bit message digest and has practical known collision attacks.
+
+# SM3
+#
+# SM3 is a cryptographic hash function standardized 
+# by the Chinese National Cryptography Administration in GM/T 0004-2012. 
+# It produces 256-bit message digests. 
+# (An English description is available at draft-oscca-cfrg-sm3-02.) 
+# This hash should be used for compatibility purposes where required 
+# and is not otherwise recommended for use.
