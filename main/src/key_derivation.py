@@ -3,6 +3,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives.ciphers import algorithms
+from cryptography.hazmat.primitives.kdf.x963kdf import X963KDF
 from cryptography.hazmat.primitives.kdf.hkdf import HKDFExpand
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.kdf.concatkdf import ConcatKDFHMAC
@@ -299,3 +300,40 @@ class KBKDFCMAC:
     def verify_key(self, kdf, key, use_verify_key = True):
         if use_verify_key:
             return kdf.verify(self.key_material, key)
+
+# X963KDF (ANSI X9.63 Key Derivation Function) is defined by ANSI 
+# in the ANSI X9.63:2001 document, 
+# to be used to derive keys for use after a Key Exchange negotiation operation.
+#
+# SECG in SEC 1 v2.0 recommends that ConcatKDFHash 
+# be used for new projects. 
+# This KDF should only be used for backwards compatibility with pre-existing protocols. 
+#
+# Warning 
+# X963KDF should not be used for password storage.
+
+class X963KDF:
+    def __init__(self):
+        self.key_length = int('32')
+        self.encoding_type = hashes.SHA256()
+        self.input_key = bytes("input key", encoding = "utf8")
+        self.sharedinfo = bytes("ANSI X9.63 Example", encoding="utf8")
+    
+    def generate_xkdf(self, use_xkdf = True):
+        if use_xkdf:
+            xkdf = X963KDF(algorithm=self.encoding_type,length=self.key_length,sharedinfo=self.sharedinfo)
+        return xkdf
+    
+    def derive_key(self, xkdf, use_derive_key = True):
+        if use_derive_key:
+            key = xkdf.derive(self.input_key)
+        return key
+    
+    def second_xkdf(self, use_second_xkdf = True):
+        if use_second_xkdf:
+            xkdf = X963KDF(algorithm=self.encoding_type,length=self.key_length,sharedinfo=self.sharedinfo)
+        return xkdf
+    
+    def verify_key(self, key, use_verify_key = True):
+        if use_verify_key:
+            return xkdf.verify(self.input_key, key)
