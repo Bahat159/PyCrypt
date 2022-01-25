@@ -1,5 +1,6 @@
 import os
 from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.kdf.concatkdf import ConcatKDFHMAC
@@ -151,4 +152,13 @@ class ConcatKDFHMAC:
         if use_verify_key:
             return ckdf.verify(self.input_key, key)
 
+# HKDF (HMAC-based Extract-and-Expand Key Derivation Function) 
+# is suitable for deriving keys of a fixed size used for other cryptographic operations.
+#
+# Warning
+# HKDF should not be used for password storage.
 
+class HKDF:
+    def __init__(self):
+        return
+    
