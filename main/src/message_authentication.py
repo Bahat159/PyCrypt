@@ -117,5 +117,11 @@ class Poly1305:
     def alternative_sign_operation(self, key, use_alternative_operation = True):
         if use_alternative_operation:
             return poly1305.Poly1305.generate_tag(key, self.message_to_authenticate)
+    
+    # A single step alternative to do verify operations. 
+    # Securely compares the MAC to tag, using the given key and data.
 
+    def verify_tag(self, key, use_verify_tag = True):
+        if use_verify_tag:
+            return poly1305.Poly1305.verify_tag(key, self.message_to_authenticate self.use_incorrect_tag)
 
