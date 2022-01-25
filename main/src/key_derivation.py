@@ -2,11 +2,12 @@ import os
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.primitives.ciphers import algorithms
 from cryptography.hazmat.primitives.kdf.hkdf import HKDFExpand
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.kdf.concatkdf import ConcatKDFHMAC
 from cryptography.hazmat.primitives.kdf.concatkdf import ConcatKDFHash
-from cryptography.hazmat.primitives.kdf.kbkdf import (CounterLocation, KBKDFHMAC, Mode)
+from cryptography.hazmat.primitives.kdf.kbkdf import (CounterLocation, KBKDFHMAC, KBKDFCMAC, Mode)
 
 
 # PBKDF2 (Password Based Key Derivation Function 2) is typically used 
@@ -259,4 +260,17 @@ class KBKDF:
     def verify_key(self, kdf, key, use_verify_key = True):
         if use_verify_key:
             return kdf.verify(self.input_key, key)
-    
+
+
+# KBKDF (Key Based Key Derivation Function) 
+# is defined by the NIST SP 800-108 document, 
+# to be used to derive additional keys from a key that has been 
+# established through an automated key-establishment scheme.
+#
+# Warning
+# 
+# KBKDFCMAC should not be used for password storage.
+
+class KBKDFCMAC:
+    def __init__(self):
+        self.salt_length = int('32')
