@@ -20,14 +20,15 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 # you should evaluate Fernet to see if it fits your needs before implementing anything using this module.
 
 # Example Usage
-#class_object = symmertic()
-#encrypt = class_object.do_encryption()
-#decrypt = class_object.do_decryption(encrypt)
 #
-#print(encrypt)
-# b'\x19\x0c\x93\x1c\xffx\x8d*zv\xe7\x97\x12\xb3\xed\xad'
+# class_object = symmertic()
+# encrypt = class_object.do_encryption()
+# decrypt = class_object.do_decryption(encrypt)
 #
-#print(repr(decrypt))
+# print(encrypt)
+#b'\xf2\x93\x14\xc4:\xe4\xb8\xc6\xabzP\x8e\xca\x81(_'
+#
+# print(decrypt)
 # b'a secret message'
 
 
@@ -41,6 +42,9 @@ class symmertic:
         self.secret_message = bytes("a secret message", encoding = "utf8")
         self.cipher     = Cipher(algorithms.AES(self.key_length), modes.CBC(self.key_iv))
     
+    def __repr__(self):
+        return self
+    
     def do_encryption(self):
         encryptor = self.cipher.encryptor()
         ct = encryptor.update(self.secret_message) + encryptor.finalize()
@@ -50,3 +54,4 @@ class symmertic:
         decryptor = self.cipher.decryptor()
         return decryptor.update(ct) + decryptor.finalize()
         
+
