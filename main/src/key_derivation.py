@@ -198,5 +198,26 @@ class HKDF:
 
 class HKDFExpand:
     def __init__(self):
-        return
+        self.salt_length = int('32')
+        self.info = bytes("hkdf-example", enconding="utf8")
+        self.key_material = os.urandom(int('16'))
+        self.encoding_type = hashes.SHA256()
     
+    def generate_hkdf_expand(self, use_hkdf_expand = True):
+        if use_hkdf_expand:
+            hkdf_expand = HKDFExpand(algorithm=self.encoding_type,length=self.salt_length,info=self.info)
+        return hkdf_expand
+    
+    def generate_derive_key(self, use_derive_key = True):
+        if use_derive_key:
+            key = hkdf.derive(self.key_material)
+        return key
+    
+    def second_hkdf_expand(self, use_second_hkdf = True):
+        if use_second_hkdf:
+            second_hkdf = HKDFExpand(algorithm=self.encoding_type,length=self.salt_length,info=self.info)
+        return second_hkdf
+    
+    def verify_hkdf_expand(self, hkdf, key, use_verify_hkdf_expand = True):
+        if use_verify_hkdf_expand:
+            return hkdf.verify(self.key_material, key)
