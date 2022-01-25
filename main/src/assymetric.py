@@ -50,23 +50,21 @@ class Assymetric_X25519PrivateKey():
     def __init__(self):
         self.author                 = 'Busari Habibullaah'
         self.description            = 'Ed25519 signing'
-        self.object_arg             = ''
-        self.key_length             = '32'
+        self.key_length             = int('32')
         self.info                   = bytes('handshake data', encoding='utf8')
         self.algorithm              = hashes.SHA256()
         self.generate_second_key    = True
     
     def __str__(self):
-        return self.object_arg
-
+        return self
+    
     def __repr__(self):
-        return self.object_arg
+        return self
 
     def generate_X25519PrivateKey(self):
         private_key =  X25519PrivateKey.generate()
         if private_key:
-            self.object_arg = private_key
-            return self.object_arg
+            return private_key 
 
     def generate_peer_public_key_X25519PrivateKey(self):
         # In a real handshake the peer_public_key will be received from the
@@ -74,8 +72,7 @@ class Assymetric_X25519PrivateKey():
         # get a public key from that. Note that in a DH handshake both peers
         # must agree on a common set of parameters.
         public_key =  X25519PrivateKey.generate().public_key()
-        self.object_arg = public_key
-        return self.object_arg
+        return public_key
 
     def generate_shared_key(self, peer_public_key):
         if peer_public_key:
@@ -116,7 +113,10 @@ class Ed448_signing_and_verification():
         self.signed_key     = True
         self.public_key     = True
         self.auth_message   = bytes('my authenticated message', encoding='utf8')
-
+    
+    def __repr__(self):
+        return self
+    
     def generate_private_key(self):
         if self.signed_key:
             private_key = Ed448PrivateKey.generate()
@@ -154,6 +154,9 @@ class X448_key_exchange():
         self.info                   = bytes('handshake data', encoding='utf8')
         self.algorithm              = hashes.SHA256()
         self.key_length             = '32'
+    
+    def __repr__(self):
+        return self
 
     def generate_private_key(self):
         if self.gen_private_key:
