@@ -15,6 +15,9 @@ class DSA_Algoirthm:
         self.data     = bytes("this is some data I'd like to sign", encoding="utf8")
         self.hash_algorithm = hashes.SHA256()
     
+    def __repr__(self):
+        return self
+    
     # Generate Private Key
     def generate_privte_key(self, use_private_key = True):
         if use_private_key:
