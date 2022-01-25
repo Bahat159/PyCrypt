@@ -250,3 +250,13 @@ class KBKDF:
         if use_generate_key:
             key = kdf.derive(self.input_key)
         return key
+    
+    def second_kbkdf(self, use_second_kdkdf = True):
+        if use_second_kdkdf:
+            second_kdf = KBKDFHMAC(algorithm=hashes.SHA256(),mode=Mode.CounterMode,length=self.salt_length,rlen=self.length_of_binary_representation,llen=self.binary_representation_length,location=CounterLocation.BeforeFixed,label=self.label,context=self.context,fixed=None,)
+        return second_kdf
+    
+    def verify_key(self, kdf, key, use_verify_key = True):
+        if use_verify_key:
+            return kdf.verify(self.input_key, key)
+    
