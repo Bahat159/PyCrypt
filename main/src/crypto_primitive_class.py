@@ -53,24 +53,21 @@ class EncryptWithFernet():
         myFile = file_name
         self.key_length = int('32')
         self.iterations = int('320000')
+        self.salt_length = os.urandom(int('16'))
         self.encoding_type = hashes.SHA256()
     
     def __repr__(self):
         return self
 
-    def generate_new_token():
-        passcode = Fernet.generate_key()
+    def generate_new_token(self, use_generate_token = True):
+        if use_generate_token:
+            passcode = Fernet.generate_key()
         return passcode
 
-    def print_red(message):
-        print(f"{Fore.RED}{message}")
-
-    def print_success(message):
-        print(f"{Back.GREEN}{message}")
-
-    def make_new_encryption_key(passcode):
-        salt = os.urandom(16)kdf = PBKDF2HMAC(algorithm=self.encoding_type,length=self.key_length,salt=salt,iterations=self.iterations,backend=default_backend())
-        key = base64.urlsafe_b64encode(kdf.derive(passcode))
+    def make_new_encryption_key(passcode, use_generate_key = True):
+        if use_generate_key:
+            kdf = PBKDF2HMAC(algorithm=self.encoding_type,length=self.key_length,salt=self.salt_length,iterations=self.iterations,backend=default_backend())
+            key = base64.urlsafe_b64encode(kdf.derive(passcode))
         return Fernet(key)
 
 
