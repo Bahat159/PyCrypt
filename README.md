@@ -7,7 +7,7 @@
   - To import a whole wrapper library class module 
      `import Assymetric_Ed25519_signing`
   - To import a single library function. Example below imports generate_private _key to generate a new private key of Assymetric model
-       `from Assymetric_Ed25519_signing import generate_ed25519_private_key`
+    `from Assymetric_Ed25519_signing import generate_ed25519_private_key`
 - **Example Usage**
   - `class_object = symmertic_Encryption()`
   - `cipher_text, encryptor_tag = class_object.do_gcm_encrypt()` 
