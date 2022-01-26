@@ -42,3 +42,22 @@ class crypto_2fa:
             time_value = time.time()
             totp_value = totp.generate(time_value)
         return totp.verify(totp_value, time_value)
+
+# Provisioning URI
+#
+# The provisioning URI of HOTP and TOTP is a feature of Google Authenticator 
+# and not actually part of the HOTP or TOTP RFCs. 
+# However, it is widely supported by web sites and 
+# mobile applications which are using Two-Factor authentication.
+#
+# For generating a provisioning URI you can use the get_provisioning_uri method of HOTP/TOTP instances.
+#
+# A common usage is encoding the provisioning URI into QR code 
+# and guiding users to scan it with Two-Factor authentication applications in their mobile devices.
+
+# counter = 5
+# account_name = 'alice@example.com'
+# issuer_name = 'Example Inc'
+
+# hotp_uri = hotp.get_provisioning_uri(account_name, counter, issuer_name)
+# totp_uri = totp.get_provisioning_uri(account_name, issuer_name)
