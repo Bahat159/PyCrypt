@@ -18,4 +18,7 @@ b'\xe6d\xa6\xe3\xb1\x99,\xaa\xae\x91\x132"\x82Z\xd9\xb6}\x0f\x88\xdb\xb6\\\xd8}\
   - `print(encryptor_tag)`
   - `b'\xfa\x04\xe4\xdavW\xe0\xd3\xa1\xce\x9a\x08\x8e\x8a\xf0\x03'`
   - `print(class_object.do_gcm_decrypt(cipher_text, encryptor_tag)))`
-  - `b'a secret message! from the author. What if it is a file? \nAuthor: Busari Habibullah.\nTest Date: January 26, 2022\nCompany name: Sandcroft software,'`
+  - `b'a secret message! from the author. What if it is a file? \ `
+  -  `Author: Busari Habibullah. \`
+  - `Test Date: January 26, 2022. \`
+  - `Company name: Sandcroft software.'`
