@@ -152,15 +152,15 @@ def check_if_equal(first_data, second_data):
 # data the same size as the block size. A simple example of padding is:
 
 # Example Usage
-# padded_mint = symmetric_padding(padding_byte, padded_with_data)
+# padded_mint = symmetric_padding_with_PKCS7(padding_byte, padded_with_data)
 # print(padded_mint)
 # print(' ')
-# print(symmetric_unpadding(padding_byte, padded_mint))
+# print(symmetric_unpadding_with_PKCS7(padding_byte, padded_mint))
 
 padding_byte = int('128')
 padded_with_data = bytes("11111111111111112222222222", encoding="utf8")
 
-def symmetric_padding(padding_byte, padded_with_data, use_symmetric_padding = True):
+def symmetric_padding_with_PKCS7(padding_byte, padded_with_data, use_symmetric_padding = True):
     try:
         from cryptography.hazmat.primitives import padding
         if use_symmetric_padding:
@@ -171,12 +171,46 @@ def symmetric_padding(padding_byte, padded_with_data, use_symmetric_padding = Tr
     except Exception:
         sys.exit()
 
-def symmetric_unpadding(padding_byte, padded_data, use_symmetric_unpadding = True):
+def symmetric_unpadding_with_PKCS7(padding_byte, padded_data, use_symmetric_unpadding = True):
     try:
         from cryptography.hazmat.primitives import padding
         if use_symmetric_unpadding:
             unpadder = padding.PKCS7(padding_byte).unpadder()
             unpadded_data = unpadder.update(padded_data) 
         return unpadded_data + unpadder.finalize()
+    except Exception:
+        sys.exit()
+
+# ANSI X9.23 padding works by appending N-1 bytes with 
+# the value of 0 and a last byte with the value of chr(N), 
+# where N is the number of bytes required to make the final 
+# block of data the same size as the block size. 
+# A simple example of padding is:
+#
+# Example Usage
+#
+# padding_mint =  symmetric_padding_with_ANSIX923(padding_byte, padded_with_data)
+# print(padding_mint)
+# print(' ')
+# print(symmetric_unpadding_with_ANSIX923(padding_byte, padding_mint))
+
+def symmetric_padding_with_ANSIX923(padding_byte, padded_with_data, use_padding_with_ANSIX923 = True):
+    try:
+        from cryptography.hazmat.primitives import padding
+        if use_padding_with_ANSIX923:
+            padder = padding.ANSIX923(padding_byte).padder()
+            padded_data = padder.update(padded_with_data)
+            padded_data += padder.finalize()
+        return padded_data
+    except Exception:
+        sys.exit()
+
+def symmetric_unpadding_with_ANSIX923(padding_byte, padded_data, use_unpadding_with_ANSIX923 = True):
+    try:
+        from cryptography.hazmat.primitives import padding
+        if use_unpadding_with_ANSIX923:
+            unpadder = padding.ANSIX923(padding_byte).unpadder()
+            data = unpadder.update(padded_data)
+        return data + unpadder.finalize()
     except Exception:
         sys.exit()
