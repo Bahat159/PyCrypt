@@ -61,3 +61,11 @@ class crypto_2fa:
 
 # hotp_uri = hotp.get_provisioning_uri(account_name, counter, issuer_name)
 # totp_uri = totp.get_provisioning_uri(account_name, issuer_name)
+#
+# Live test mode
+#
+# https://rootprojects.org/authenticator/
+#
+# Browser-authenticator source repository
+#
+# https://git.coolaj86.com/coolaj86/browser-authenticator.js
