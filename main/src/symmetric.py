@@ -38,6 +38,7 @@ class symmertic_Encryption:
     # A simple example of encrypting and then decrypting content with AES is:
 
     def __init__(self):
+        self.buffer          = bytearray(31)
         self.key             = os.urandom(int('32'))
         self.chahcha_nonce   = os.urandom(int('16'))
         self.key_length      = os.urandom(int('32'))  # (32, 128, 192, 156)
@@ -126,3 +127,48 @@ class symmertic_Encryption:
             decryptor = Cipher(algorithms.AES(self.key),modes.GCM(self.key_iv, encryptor_tag),backend=default_backend()).decryptor()
             decryptor.authenticate_additional_data(self.associated_data)
             return decryptor.update(ciphertext) + decryptor.finalize()
+    
+    # When calling encryptor() or decryptor() on a Cipher object 
+    # the result will conform to the CipherContext interface. 
+    # You can then call update(data) with data until you have 
+    # fed everything into the context. Once that is done 
+    # call finalize() to finish the operation and obtain the remainder of the data. 
+    #
+    # Block ciphers require that the plaintext or ciphertext 
+    # always be a multiple of their block size. 
+    # Because of that padding is sometimes required to make 
+    # a message the correct size. CipherContext will not 
+    # automatically apply any padding; you’ll need to add your own. 
+    # For block ciphers the recommended padding is PKCS7. 
+    # If you are using a stream cipher mode (such as CTR) you don’t have to worry about this.
+    #
+    # Warning 
+    #
+    # This method allows you to avoid a memory copy by passing 
+    # a writable buffer and reading the resulting data. 
+    # You are responsible for correctly sizing the buffer and properly handling the data. 
+    # This method should only be used when extremely high performance 
+    # is a requirement and you will be making many small calls to update_into.
+    #
+    # class_object = symmertic_Encryption()
+    # obj = class_object.CipherContext_interface_to_encrypt()
+    # print(obj)
+    # print('---------------------------')
+    # print(class_object.CipherContext_interface_to_decrypt(obj))
+
+    def CipherContext_interface_to_encrypt(self, use_cipher_context_interface = True):
+        if use_cipher_context_interface:
+            cipher = self.AES_cipher
+            encryptor = cipher.encryptor()
+            # the buffer needs to be at least len(data) + n - 1 where n is cipher/mode block size in bytes
+            
+            len_encrypted = encryptor.update_into(self.secret_message, self.buffer)
+            ct = bytes(self.buffer[:len_encrypted]) + encryptor.finalize()
+        return ct
+    
+    def CipherContext_interface_to_decrypt(self, ct, use_cipher_context_to_decrypt = True):
+        if use_cipher_context_to_decrypt:
+            decryptor = self.AES_cipher.decryptor()
+            len_decrypted = decryptor.update_into(ct, self.buffer)
+            # get the plaintext from the buffer reading only the bytes written (len_decrypted)
+            return bytes(self.buffer[:len_decrypted]) + decryptor.finalize()
