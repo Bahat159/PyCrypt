@@ -1,4 +1,6 @@
 import os
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.ciphers.modes import CBC
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 
@@ -36,13 +38,19 @@ class symmertic_Encryption:
     # A simple example of encrypting and then decrypting content with AES is:
 
     def __init__(self):
-        self.chahcha_nonce = os.urandom(int('16'))
-        self.key_length = os.urandom(int('32'))  # (32, 128, 192, 156)
-        self.key_iv     = os.urandom(int('16'))
-        self.secret_message = bytes("a secret message", encoding = "utf8")
-        self.AES_cipher     = Cipher(algorithms.AES(self.key_length), modes.CBC(self.key_iv))
+        self.key             = os.urandom(int('32'))
+        self.chahcha_nonce   = os.urandom(int('16'))
+        self.key_length      = os.urandom(int('32'))  # (32, 128, 192, 156)
+        self.key_iv          = os.urandom(int('16'))
+        self.AES_cipher      = Cipher(algorithms.AES(self.key_length), modes.CBC(self.key_iv))
+        self.secret_message  = bytes("a secret message", encoding = "utf8")
+        self.associated_data = bytes("authenticated but not encrypted payload", encoding="utf8")
+        self.plaintext_data  = bytes("a secret message! from the author. What if it is a file? \nAuthor: Busari Habibullah.\nTest Date: January 26, 2022\nCompany name: Sandcroft software,", encoding="utf8")
     
     def __repr__(self):
+        return self
+    
+    def __str__(self):
         return self
     
     def do_AES_encryption(self):
@@ -71,3 +79,50 @@ class symmertic_Encryption:
             cipher = Cipher(algorithm, mode=None)
             decryptor = cipher.decryptor()
         return decryptor.update(ct)
+    
+    
+    # Modes
+    #
+    # CBC (Cipher Block Chaining) is a mode of operation for block ciphers. 
+    # It is considered cryptographically strong.
+
+    def cbc_mode_construction(self, use_cbc_mode = True):
+        if use_cbc_mode:
+            iv = os.urandom(16)
+            mode = CBC(iv)
+        return mode
+
+    # If you are encrypting data that can fit into memory 
+    # you should strongly consider using AESGCM instead of this.
+    #
+    # When using this mode you must not use the decrypted data 
+    # until the appropriate finalization 
+    # method (finalize() or finalize_with_tag()) has been called. 
+    # GCM provides no guarantees of ciphertext integrity until decryption is complete.
+    #
+    # GCM (Galois Counter Mode) is a mode of operation for block ciphers. 
+    # An AEAD (authenticated encryption with additional data) mode 
+    # is a type of block cipher mode that simultaneously 
+    # encrypts the message as well as authenticating it. 
+    # Additional unencrypted data may also be authenticated. 
+    # Additional means of verifying integrity such as HMAC are not necessary.
+    #
+    #
+    # GCM Use case
+    #
+    # class_object = symmertic_Encryption()
+    # cipher_text, encryptor_tag = class_object.do_gcm_encrypt()
+    # print(class_object.do_gcm_decrypt(cipher_text, encryptor_tag))
+    
+    def do_gcm_encrypt(self, use_gcm_encryptor = True):
+        if use_gcm_encryptor:
+            encryptor = Cipher(algorithms.AES(self.key),modes.GCM(self.key_iv),backend=default_backend()).encryptor()
+            encryptor.authenticate_additional_data(self.associated_data)
+            ciphertext = encryptor.update(self.plaintext_data) + encryptor.finalize()
+        return (ciphertext, encryptor.tag)
+    
+    def do_gcm_decrypt(self, ciphertext, encryptor_tag, use_gcm_decryptor = True):
+        if use_gcm_decryptor:
+            decryptor = Cipher(algorithms.AES(self.key),modes.GCM(self.key_iv, encryptor_tag),backend=default_backend()).decryptor()
+            decryptor.authenticate_additional_data(self.associated_data)
+            return decryptor.update(ciphertext) + decryptor.finalize()
