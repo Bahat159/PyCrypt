@@ -1,5 +1,7 @@
+import sys
 import hashlib
 from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import constant_time
 from cryptography.hazmat.primitives.asymmetric import dh
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
@@ -80,7 +82,7 @@ class Asymmetric_Utilities:
     
     def generate_private_key(self, use_assymetric_private_key = True):
         if use_assymetric_private_key:
-            private_key = rsa.generate_private_key(public_exponent=self.public_exponent,key_size=self.key_size,)
+            private_key = rsa.generate_private_key(public_exponent=self.public_exponent,key_size=self.key_size,backend=default_backend())
         return private_key
     
     def generate_public_key(self, private_key, use_generate_public_key = True):
@@ -136,3 +138,45 @@ def check_if_equal(first_data, second_data):
 # print(check_result)
 # False
 #
+
+# Symmetric Padding
+#
+# Padding is a way to take data that may or may not be a 
+# multiple of the block size for a cipher and extend it out so that it is. 
+# This is required for many block cipher modes as they 
+# require the data to be encrypted to be an exact multiple of the block size.
+#
+# PKCS7 padding is a generalization of PKCS5 padding (also known as standard padding). 
+# PKCS7 padding works by appending N bytes with the value of chr(N), 
+# where N is the number of bytes required to make the final block of 
+# data the same size as the block size. A simple example of padding is:
+
+# Example Usage
+# padded_mint = symmetric_padding(padding_byte, padded_with_data)
+# print(padded_mint)
+# print(' ')
+# print(symmetric_unpadding(padding_byte, padded_mint))
+
+padding_byte = int('128')
+padded_with_data = bytes("11111111111111112222222222", encoding="utf8")
+
+def symmetric_padding(padding_byte, padded_with_data, use_symmetric_padding = True):
+    try:
+        from cryptography.hazmat.primitives import padding
+        if use_symmetric_padding:
+            padder = padding.PKCS7(padding_byte).padder()
+            padded_data = padder.update(padded_with_data)
+            padded_data += padder.finalize()
+        return padded_data
+    except Exception:
+        sys.exit()
+
+def symmetric_unpadding(padding_byte, padded_data, use_symmetric_unpadding = True):
+    try:
+        from cryptography.hazmat.primitives import padding
+        if use_symmetric_unpadding:
+            unpadder = padding.PKCS7(padding_byte).unpadder()
+            unpadded_data = unpadder.update(padded_data) 
+        return unpadded_data + unpadder.finalize()
+    except Exception:
+        sys.exit()
