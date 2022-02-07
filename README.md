@@ -1,6 +1,6 @@
 ![GitHub Light](./base-octocat.svg)
 # PyCrypt
-    16 house(bit) in 16 places equal 256 each house has 256 bit length efficency, either with the power of 16, or double the precision, we are getting figures.
+    16 houses builtin 16 different places equal 256, each house has 256 domains, each domain can be represented either with the power of 16, or double the precision, we are getting more landspace.
 - **Python Cryptography Library**
   -  A wrapper for the cryptography python library for efficiency and reliablity. An end to end encryption library to send encrypted messages across the internet, also among peer-  to-peer. This library should be revisited in order to make it robust and usable accross all platform.
 
