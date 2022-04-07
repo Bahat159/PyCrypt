@@ -28,7 +28,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 class Assymetric_Ed25519_signing():
     def __init__(self):
         self.author         = 'Busari Habibullaah'
-        self.description    = 'Ed25519 signing'
+        self.description    = 'Ed25519 crypted message signing'
 
     def generate_ed25519_private_key(self, use_generate_ed25519_private_key = True):
         if use_generate_ed25519_private_key:
