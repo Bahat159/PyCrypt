@@ -4,6 +4,8 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.asymmetric import padding
 
+# copyright: Sandcroft software.
+# Author: Busari Habibullaah
 # RSA is a public-key algorithm for encrypting and signing messages.
 #
 # Unlike symmetric cryptography, where the key is typically just a random series of bytes, 
